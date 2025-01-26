@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Acadêmico - {{ selected_year }}.{{ selected_period }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link rel="icon" href="{% static 'img/suap-icon.png' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'portal_estudante:dashboard' %}">Portal do Aluno</a>
+            <div class="d-flex align-items-center">
+                {% if user_data %}
+                    <span class="user-info">
+                        Olá, {{ user_data.nome_usual|default:user_data.nome }}
+                        {% if user_data.curso %}
+                            {% with curso=user_data.curso %}
+                            ({% for char in curso %}{% if char|upper == char and char|lower != char %}{{ char }}{% endif %}{% endfor %})
+                            {% endwith %}
+                        {% endif %}
+                    </span>
+                    <form action="{% url 'portal_estudante:logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-light btn-sm ms-2">Sair</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 class="mb-4">Relatório Acadêmico - {{ selected_year }}.{{ selected_period }}</h2>
+                <a href="{% url 'portal_estudante:dashboard' %}?ano={{ selected_year }}&periodo={{ selected_period }}" class="btn btn-outline-secondary mb-4">
+                    <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+                </a>
+            </div>
+        </div>
+
+        {% for subject in report_data %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">{{ subject.disciplina }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="card-subtitle mb-3">Notas</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Nota 1:</th>
+                                <td>{{ subject.nota1|floatformat:1 }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nota 2:</th>
+                                <td>{{ subject.nota2|floatformat:1 }}</td>
+                            </tr>
+                            <tr>
+                                <th>Média:</th>
+                                <td>{{ subject.media|floatformat:1 }}</td>
+                            </tr>
+                            {% if subject.final %}
+                            <tr>
+                                <th>Prova Final:</th>
+                                <td>{{ subject.final|floatformat:1 }}</td>
+                            </tr>
+                            <tr>
+                                <th>Média Final:</th>
+                                <td>{{ subject.media_final|floatformat:1 }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="card-subtitle mb-3">Frequência</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Carga Horária:</th>
+                                <td>{{ subject.carga_horaria }} aulas</td>
+                            </tr>
+                            <tr>
+                                <th>Faltas Atuais:</th>
+                                <td>{{ subject.faltas }} aulas</td>
+                            </tr>
+                            <tr>
+                                <th>Limite de Faltas:</th>
+                                <td>{{ subject.max_faltas|floatformat:0 }} aulas</td>
+                            </tr>
+                            <tr>
+                                <th>Pode Faltar:</th>
+                                <td>{{ subject.faltas_restantes|floatformat:0 }} aulas</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <strong>Situação:</strong>
+                    <span class="badge {% if subject.situacao == 'Aprovado' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                        {{ subject.situacao }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
+</body>
+</html> 
