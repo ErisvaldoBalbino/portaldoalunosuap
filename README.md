@@ -2,9 +2,9 @@
 
 Sistema web que integra com a API do SUAP para fornecer uma interface amigável de visualização de notas, frequências e situação acadêmica dos alunos.
 
-## 🌐 Site em Produção
+## 🌐 Site
 
-Acesse o Portal do Aluno em: [https://portaldoalunosuap.vercel.app](https://portaldoalunosuap.vercel.app)
+Acesse o Portal do Aluno em: [portaldoalunosuap.vercel.app](https://portaldoalunosuap.vercel.app)
 
 ## 🚀 Funcionalidades
 
