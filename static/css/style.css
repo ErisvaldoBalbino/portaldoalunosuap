@@ -1,9 +1,11 @@
 /* Color Variables */
 :root {
+    --color-primary: #1E3231;
+    --background-color: #D4DED6;
+    --card-background: #FFFFFF;
+    --text-color: #212529;
     --color-background: #D4DED6;
     --color-card: #FFFFFF;
-    --color-primary: #1E3231;
-    --color-text: #1E3231;
     --color-success: #28a745;
     --color-danger: #dc3545;
     --color-approved: #28a745;
@@ -12,8 +14,8 @@
 
 /* Base Styles */
 body {
-    background-color: var(--color-background);
-    color: var(--color-text);
+    background-color: var(--color-primary);
+    color: var(--text-color);
     min-height: 100vh;
 }
 
@@ -24,9 +26,9 @@ body {
 
 /* Cards */
 .card {
-    background-color: var(--color-card);
+    background-color: var(--card-background);
     transition: transform 0.2s;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     border: none;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -42,7 +44,7 @@ body {
 
 /* Status Colors */
 .status-approved {
-    color: var(--color-approved);
+    color: #198754;
     font-weight: 500;
 }
 
@@ -51,7 +53,7 @@ body {
 }
 
 .status-ongoing {
-    color: var(--color-ongoing);
+    color: #FFC107;
     font-weight: 500;
 }
 
@@ -65,7 +67,7 @@ body {
 /* List Group */
 .list-group-item {
     transition: all 0.2s;
-    color: var(--color-text);
+    color: var(--text-color);
     border: none;
     padding: 0.75rem 1.25rem;
     border-radius: 5px !important;
@@ -92,18 +94,15 @@ body {
 
 /* Current Period */
 .periodo-atual {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--color-primary);
+    font-size: 2rem;
+    font-weight: bold;
     text-align: center;
-    padding: 0.5rem;
-    background-color: var(--color-background);
-    border-radius: 8px;
+    color: var(--color-primary);
 }
 
 /* Table */
 .table {
-    color: var(--color-text);
+    color: var(--text-color);
     margin-bottom: 0;
 }
 
@@ -184,7 +183,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 9999;
     backdrop-filter: blur(5px);
 }
 
@@ -218,5 +217,72 @@ footer p {
     
     .card-body {
         padding: 1rem;
+    }
+}
+
+/* Novos estilos para sidebar e main content */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 250px;
+    background-color: var(--color-primary);
+    padding: 2rem 1rem;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    margin-left: 250px;
+    background-color: var(--background-color);
+    min-height: 100vh;
+    border-top-left-radius: 4rem;
+    border-bottom-left-radius: 4rem;
+    padding: 2rem;
+    position: relative;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.sidebar-title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.sidebar-user {
+    color: white;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.sidebar-logout {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.sidebar-logout .btn-outline-secondary {
+    color: white;
+    border-color: white;
+}
+
+.sidebar-logout .btn-outline-secondary:hover {
+    background-color: white;
+    color: var(--color-primary);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .main-content {
+        margin-left: 0;
+        border-radius: 0;
     }
 } 
