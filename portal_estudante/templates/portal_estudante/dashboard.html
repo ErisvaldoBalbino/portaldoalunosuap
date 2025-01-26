@@ -12,21 +12,46 @@
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <h1 class="sidebar-title">Portal do Aluno</h1>
-        {% if user_data %}
-            <div class="sidebar-user">
-                <p class="mb-1">Olá, {{ user_data.nome_usual|default:user_data.nome }}</p>
-                {% if user_data.curso %}
-                    {% with curso=user_data.curso %}
-                    <p class="mb-3">({% for char in curso %}{% if char|upper == char and char|lower != char %}{{ char }}{% endif %}{% endfor %})</p>
-                    {% endwith %}
-                {% endif %}
+        <div class="sidebar-header">
+            <h1 class="sidebar-title">Portal do Aluno</h1>
+            {% if user_data %}
+                <div class="sidebar-user">
+                    <p class="mb-1">Olá, {{ user_data.nome_usual|default:user_data.nome }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="sidebar-content">
+            <!-- Links Úteis -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">Links Úteis</h6>
+                <div class="sidebar-links">
+                    <a href="https://suap.ifrn.edu.br" target="_blank" class="sidebar-link">
+                        <i class="fas fa-external-link-alt"></i>
+                        SUAP
+                    </a>
+                    <a href="https://portal.ifrn.edu.br" target="_blank" class="sidebar-link">
+                        <i class="fas fa-university"></i>
+                        Portal IFRN
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            {% if user_data %}
+                <div class="version-info mb-3">
+                    <small class="text">v1.0.0</small>
+                </div>
                 <form action="{% url 'portal_estudante:logout' %}" method="post" class="sidebar-logout">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-secondary btn-sm">Sair</button>
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </button>
                 </form>
-            </div>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
 
     <!-- Main -->
@@ -53,6 +78,7 @@
                                 <p><strong>Nome:</strong> {{ user_data.nome_registro }}</p>
                                 <p><strong>Matrícula:</strong> {{ user_data.identificacao }}</p>
                                 <p><strong>Curso:</strong> {{ user_data.curso }}</p>
+                                <p><strong>Campus:</strong> {{ user_data.campus }}</p>
                             </div>
                         </div>
 
