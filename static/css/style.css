@@ -98,6 +98,8 @@ body {
     font-weight: bold;
     text-align: center;
     color: var(--color-primary);
+    background-color: var(--background-color);
+    border-radius: 0.4rem;
 }
 
 /* Table */
@@ -234,6 +236,70 @@ footer p {
     flex-direction: column;
 }
 
+.sidebar-header {
+    margin-bottom: 2rem;
+}
+
+.sidebar-content {
+    flex-grow: 1;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+}
+
+.sidebar-section {
+    margin-bottom: 2rem;
+}
+
+.sidebar-section-title {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+}
+
+.sidebar-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.version-info {
+    text-align: center;
+}
+
+.version-info small {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Ajuste no botão de logout */
+.sidebar-logout .btn-outline-secondary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+}
+
 .main-content {
     margin-left: 250px;
     background-color: var(--background-color);
@@ -251,13 +317,15 @@ footer p {
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 2rem;
-    text-align: center;
+    text-align: left;
+    padding-left: 0.5rem;
 }
 
 .sidebar-user {
     color: white;
     margin-bottom: 1rem;
-    text-align: center;
+    text-align: left;
+    padding-left: 0.5rem;
 }
 
 .sidebar-logout {
