@@ -10,6 +10,5 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('oauth/callback/', views.oauth_callback, name='oauth_callback'),
     path('dashboard/', views.student_dashboard, name='dashboard'),
-    path('student/<str:registration>/', views.get_student_info, name='student_info'),
     path('report/', views.generate_report, name='report'),
 ] 
