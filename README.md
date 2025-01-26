@@ -48,6 +48,7 @@ pip install -r requirements.txt
 4. Configure as variáveis de ambiente:
    - Renomeie o arquivo `.env.example` para `.env`
    - Preencha as variáveis com suas configurações:
+   - Você pode conseguir o client id e client secret em [suap.ifrn.edu.br/api](https://suap.ifrn.edu.br/api/), criando uma aplicação OAUTH2
 ```bash
 # Django
 SECRET_KEY="sua_chave_secreta_aqui"
@@ -88,13 +89,7 @@ python manage.py runserver
 - Variáveis sensíveis protegidas em arquivo `.env`
 - CSRF Protection ativada
 - Sessões seguras
-- Validação de dados de entrada
-
 
 ## 📝 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-## 📧 Contato
-
-Para dúvidas ou sugestões, abra uma issue no GitHub.
