@@ -1,0 +1,126 @@
+/* Cores e variáveis específicas do relatório */
+:root {
+    --color-primary: #1E3231;
+    --background-color: #D4DED6;
+    --card-background: #FFFFFF;
+    --text-color: #212529;
+}
+
+/* Navbar customizada */
+.navbar-custom {
+    background-color: var(--color-primary);
+    height: 70px;
+}
+
+/* Cards */
+.card {
+    background-color: var(--card-background);
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: var(--card-background);
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.card-title {
+    color: var(--color-primary);
+}
+
+/* Tabelas */
+.table {
+    color: var(--text-color);
+    margin-bottom: 0;
+}
+
+.table th {
+    font-weight: 600;
+    padding: 0.75rem;
+    border-top: none;
+}
+
+.table td {
+    padding: 0.75rem;
+}
+
+.table-sm th,
+.table-sm td {
+    padding: 0.5rem;
+}
+
+/* Status e badges */
+.badge {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+/* Botões */
+.btn-outline-secondary {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.btn-outline-light {
+    border-width: 2px;
+}
+
+/* User info na navbar */
+.user-info {
+    color: white;
+    font-weight: 500;
+    margin-right: 1rem;
+}
+
+/* Container e layout */
+body {
+    background-color: var(--color-primary);
+    color: var(--text-color);
+    min-height: 100vh;
+}
+
+.container {
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .container {
+        padding-top: 0.5rem;
+    }
+    
+    .table-responsive {
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+} 
