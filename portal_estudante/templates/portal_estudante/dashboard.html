@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -188,28 +189,33 @@
                                         <thead>
                                             <tr>
                                                 <th class="border-0">Disciplina</th>
+                                                <th class="border-0 text-center">C. H.</th>
+                                                <th class="border-0 text-center">Aulas Dadas</th>
+                                                <th class="border-0 text-center">Faltas</th>
+                                                <th class="border-0 text-center">Freq.</th>
                                                 <th class="border-0 text-center">Nota 1</th>
                                                 <th class="border-0 text-center">Nota 2</th>
                                                 <th class="border-0 text-center">Média</th>
                                                 <th class="border-0 text-center">Final</th>
                                                 <th class="border-0 text-center">Média Final</th>
-                                                <th class="border-0 text-center">Faltas</th>
-                                                <th class="border-0 text-center">Freq.</th>
                                                 <th class="border-0 text-center">Status</th>
                                                 <th class="border-0 text-center">Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for subject in grades %}
+                                                {% with discipline=disciplines|filter_by_name:subject.disciplina %}
                                                 <tr class="align-middle">
                                                     <td class="border-0">{{ subject.disciplina }}</td>
+                                                    <td class="border-0 text-center">{{ discipline.ch_total_aula|default:subject.carga_horaria }}</td>
+                                                    <td class="border-0 text-center">{{ subject.carga_horaria_cumprida|default:"0" }}</td>
+                                                    <td class="border-0 text-center">{{ subject.numero_faltas }}</td>
+                                                    <td class="border-0 text-center">{{ subject.percentual_carga_horaria_frequentada|floatformat:1 }}%</td>
                                                     <td class="border-0 text-center">{{ subject.nota_etapa_1.nota|default:"--" }}</td>
                                                     <td class="border-0 text-center">{{ subject.nota_etapa_2.nota|default:"--" }}</td>
                                                     <td class="border-0 text-center">{{ subject.media_disciplina|default:"--" }}</td>
                                                     <td class="border-0 text-center">{{ subject.nota_avaliacao_final.nota|default:"--" }}</td>
                                                     <td class="border-0 text-center">{{ subject.media_final_disciplina|default:"--" }}</td>
-                                                    <td class="border-0 text-center">{{ subject.numero_faltas }}</td>
-                                                    <td class="border-0 text-center">{{ subject.percentual_carga_horaria_frequentada|floatformat:1 }}%</td>
                                                     <td class="border-0 text-center">
                                                         {% if subject.situacao == "Aprovado" %}
                                                             <span class="status-approved">{{ subject.situacao }}</span>
@@ -223,7 +229,17 @@
                                                         </button>
                                                     </td>
                                                 </tr>
+                                                {% endwith %}
                                             {% endfor %}
+                                            <!-- Totals Row -->
+                                            <tr class="table-light fw-bold">
+                                                <td class="border-0">Total Geral</td>
+                                                <td class="border-0 text-center">{{ totals.total_classes }}</td>
+                                                <td class="border-0 text-center">{{ totals.total_classes_given }}</td>
+                                                <td class="border-0 text-center">{{ totals.total_absences }}</td>
+                                                <td class="border-0 text-center">{{ totals.total_frequency }}%</td>
+                                                <td class="border-0 text-center" colspan="7">--</td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
