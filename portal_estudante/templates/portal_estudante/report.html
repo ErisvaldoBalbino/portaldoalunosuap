@@ -74,11 +74,22 @@
             <div class="row mb-4">
                 <div class="col">
                     <h2 class="mb-4">Relatório Acadêmico - {{ selected_year }}.{{ selected_period }}</h2>
-                    <a href="{% url 'portal_estudante:dashboard' %}?ano={{ selected_year }}&periodo={{ selected_period }}" 
-                       class="btn btn-outline-secondary mb-4"
-                       onclick="showTableLoading()">
-                        <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
-                    </a>
+                    <div class="d-flex gap-2 mb-4">
+                        <a href="{% url 'portal_estudante:dashboard' %}?ano={{ selected_year }}&periodo={{ selected_period }}" 
+                           class="btn btn-outline-secondary"
+                           onclick="showTableLoading()">
+                            <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+                        </a>
+                        <a href="{% url 'portal_estudante:export_pdf' %}?ano={{ selected_year }}&periodo={{ selected_period }}" 
+                           class="btn btn-primary"
+                           target="_blank">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </a>
+                        <a href="{% url 'portal_estudante:export_csv' %}?ano={{ selected_year }}&periodo={{ selected_period }}" 
+                           class="btn btn-success">
+                            <i class="fas fa-file-csv"></i> Exportar CSV
+                        </a>
+                    </div>
                 </div>
             </div>
 

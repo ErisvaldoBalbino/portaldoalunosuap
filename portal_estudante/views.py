@@ -1,11 +1,18 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.conf import settings
 from django.views.decorators.http import require_http_methods
 import secrets
 import logging
 from api import SUAPAPI
+import csv
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from io import BytesIO
+import datetime
 
 logger = logging.getLogger('student_portal')
 
@@ -257,3 +264,179 @@ def calculate_summary(grades):
             summary['at_risk_subjects'] += 1
     
     return summary
+
+def export_pdf(request):
+    """Exporta o relatório em formato PDF"""
+    if 'access_token' not in request.session:
+        return redirect('portal_estudante:login')
+    
+    # Obtém os dados do relatório
+    suap_api = SUAPAPI()
+    suap_api.access_token = request.session['access_token']
+    user_data = request.session.get('user_data', {})
+    selected_year = request.GET.get('ano')
+    selected_period = request.GET.get('periodo')
+    
+    if not selected_year or not selected_period:
+        return redirect('portal_estudante:dashboard')
+    
+    grades_data = suap_api.get_user_grades(selected_year, selected_period)
+    
+    # Cria o buffer para o PDF
+    buffer = BytesIO()
+    # Reduz as margens laterais para alinhar com o texto
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=25,
+        leftMargin=25,
+        topMargin=30,
+        bottomMargin=30
+    )
+    elements = []
+    
+    # Estilos
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=14,
+        spaceAfter=20
+    )
+    
+    # Estilo para o texto da disciplina
+    disciplina_style = ParagraphStyle(
+        'DisciplinaStyle',
+        parent=styles['Normal'],
+        fontSize=8,
+        leading=10,
+        alignment=0
+    )
+    
+    # Título
+    title = Paragraph(f"Relatório Acadêmico - {selected_year}.{selected_period}", title_style)
+    elements.append(title)
+    
+    # Informações do aluno com fonte menor
+    info_style = ParagraphStyle(
+        'InfoStyle',
+        parent=styles['Normal'],
+        fontSize=10,
+        spaceAfter=5
+    )
+    elements.append(Paragraph(f"Aluno: {user_data.get('nome_registro')}", info_style))
+    elements.append(Paragraph(f"Matrícula: {user_data.get('identificacao')}", info_style))
+    elements.append(Paragraph(f"Curso: {user_data.get('curso')}", info_style))
+    elements.append(Spacer(1, 15))
+    
+    # Dados das disciplinas
+    data = [['Disciplina', 'N1', 'N2', 'Média', 'Final', 'M.Final', 'Faltas', 'Situação']]
+    
+    for subject in grades_data:
+        # Cria um Paragraph para o nome da disciplina para permitir quebra de linha
+        disciplina = Paragraph(subject.get('disciplina', ''), disciplina_style)
+        data.append([
+            disciplina,
+            subject.get('nota_etapa_1', {}).get('nota', '--'),
+            subject.get('nota_etapa_2', {}).get('nota', '--'),
+            subject.get('media_disciplina', '--'),
+            subject.get('nota_avaliacao_final', {}).get('nota', '--'),
+            subject.get('media_final_disciplina', '--'),
+            subject.get('numero_faltas', '0'),
+            subject.get('situacao', 'Cursando')
+        ])
+    
+    # Aumenta as larguras proporcionalmente para usar todo o espaço disponível
+    col_widths = [220, 38, 38, 48, 38, 48, 43, 65]  # Larguras ajustadas
+    table = Table(data, colWidths=col_widths, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+        ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ROWHEIGHT', (0, 0), (-1, 0), 20),
+        ('ROWHEIGHT', (0, 1), (-1, -1), 30),
+        ('LEFTPADDING', (0, 0), (-1, -1), 5),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+    ]))
+    
+    elements.append(table)
+    
+    # Adiciona data de geração com fonte menor
+    elements.append(Spacer(1, 15))
+    date_generated = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    elements.append(Paragraph(f"Gerado em: {date_generated}", info_style))
+    
+    # Gera o PDF
+    doc.build(elements)
+    
+    # Prepara a resposta
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="relatorio_{selected_year}_{selected_period}.pdf"'
+    
+    return response
+
+def export_csv(request):
+    """Exporta o relatório em formato CSV"""
+    if 'access_token' not in request.session:
+        return redirect('portal_estudante:login')
+    
+    # Obtém os dados do relatório
+    suap_api = SUAPAPI()
+    suap_api.access_token = request.session['access_token']
+    selected_year = request.GET.get('ano')
+    selected_period = request.GET.get('periodo')
+    
+    if not selected_year or not selected_period:
+        return redirect('portal_estudante:dashboard')
+    
+    grades_data = suap_api.get_user_grades(selected_year, selected_period)
+    
+    # Prepara a resposta CSV
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="relatorio_{selected_year}_{selected_period}.csv"'
+    
+    # Cria o escritor CSV
+    writer = csv.writer(response)
+    
+    # Escreve o cabeçalho
+    writer.writerow([
+        'Disciplina',
+        'Nota 1',
+        'Nota 2',
+        'Média',
+        'Final',
+        'Média Final',
+        'Faltas',
+        'Carga Horária',
+        'Frequência (%)',
+        'Situação'
+    ])
+    
+    # Escreve os dados
+    for subject in grades_data:
+        writer.writerow([
+            subject.get('disciplina', ''),
+            subject.get('nota_etapa_1', {}).get('nota', ''),
+            subject.get('nota_etapa_2', {}).get('nota', ''),
+            subject.get('media_disciplina', ''),
+            subject.get('nota_avaliacao_final', {}).get('nota', ''),
+            subject.get('media_final_disciplina', ''),
+            subject.get('numero_faltas', '0'),
+            subject.get('carga_horaria', '0'),
+            subject.get('percentual_carga_horaria_frequentada', '0'),
+            subject.get('situacao', 'Cursando')
+        ])
+    
+    return response
