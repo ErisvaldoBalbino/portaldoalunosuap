@@ -9,6 +9,6 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('oauth/callback/', views.oauth_callback, name='oauth_callback'),
-    path('dashboard/', views.student_dashboard, name='dashboard'),
+    path('dashboard/', views.dashboard, name='dashboard'),
     path('report/', views.generate_report, name='report'),
 ] 
