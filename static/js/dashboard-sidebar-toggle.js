@@ -1,34 +1,21 @@
 // Inicializa o sidebar expandido
 const sidebar = document.getElementById('sidebar');
 const mainContent = document.getElementById('mainContent');
-const toggleButton = document.getElementById('sidebarToggle')
-
-// Função para atualizar a posição do botão toggle
-function updateTogglePosition() {
-    if (window.innerWidth <= 768) {
-        if (sidebar.classList.contains('active')) {
-            toggleButton.style.left = '290px';
-        } else {
-            toggleButton.style.left = '1rem';
-        }
-    } else {
-        if (sidebar.classList.contains('active')) {
-            toggleButton.style.left = '1rem';
-        } else {
-            toggleButton.style.left = '260px';
-        }
-    }
-};
+const toggleButton = document.getElementById('sidebarToggle');
 
 // Event listener para o botão toggle
 toggleButton.addEventListener('click', function() {
     sidebar.classList.toggle('active');
     mainContent.classList.toggle('expanded');
-    updateTogglePosition();
+    toggleButton.classList.toggle('active');
 });
 
-// Atualiza a posição do botão quando a janela é redimensionada
-window.addEventListener('resize', updateTogglePosition)
-
-// Posiciona o botão inicialmente
-updateTogglePosition();
+// Adiciona listener para redimensionamento da janela
+window.addEventListener('resize', function() {
+    // Apenas para garantir que o overlay seja removido em telas maiores
+    if (window.innerWidth > 768) {
+        mainContent.classList.remove('expanded');
+        sidebar.classList.remove('active');
+        toggleButton.classList.remove('active');
+    }
+});
