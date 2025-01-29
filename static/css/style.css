@@ -274,17 +274,23 @@ footer p {
     margin-top: auto;
 }
 
+/* Sidebar Sections */
 .sidebar-section {
-    margin-bottom: 2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-section:last-child {
+    border-bottom: none;
 }
 
 .sidebar-section-title {
     color: rgba(255, 255, 255, 0.7);
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.5px;
     margin-bottom: 1rem;
-    padding-left: 0.5rem;
+    padding: 0 1.5rem;
 }
 
 .sidebar-links {
@@ -294,19 +300,31 @@ footer p {
 }
 
 .sidebar-link {
-    color: white;
-    text-decoration: none;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    transition: all 0.2s;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
 }
 
 .sidebar-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
     color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left-color: var(--color-success);
+}
+
+.sidebar-link.active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left-color: var(--color-success);
+}
+
+.sidebar-link i {
+    width: 20px;
+    margin-right: 10px;
+    font-size: 1rem;
 }
 
 .sidebar-title {
@@ -353,19 +371,11 @@ footer p {
     color: var(--color-primary);
 }
 
-/* Responsividade */
+/* Sidebar Responsivo */
 @media (max-width: 768px) {
-    .table-responsive {
-        margin: 0 -1rem;
-        padding: 0 1rem;
-    }
-    
-    .card-body {
-        padding: 1rem;
-    }
-
     .sidebar {
-        width: 400px;
+        width: 100%;
+        max-width: 100%;
         transform: translateX(-100%);
     }
 
@@ -375,38 +385,14 @@ footer p {
 
     .main-content {
         margin-left: 0;
-        border-radius: 0;
+    }
+
+    .main-content.sidebar-active {
+        margin-left: 0;
     }
 
     .sidebar-toggle {
-        left: 0%;
-    }
-    
-    .sidebar-toggle.active {
-        left: 400px;
-    }
-
-    /* Overlay escuro quando sidebar está ativa */
-    .main-content::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(3px);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        z-index: 99;
-        pointer-events: none;
-    }
-
-    .main-content.expanded::before {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: all;
+        display: flex;
     }
 }
 

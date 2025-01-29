@@ -137,4 +137,60 @@ body {
         margin: 0 -1rem;
         padding: 0 1rem;
     }
-} 
+}
+
+/* Ajuste do container para o relatório */
+.report-page .container-fluid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Estilos existentes do relatório */
+.report-header {
+    margin-bottom: 2rem;
+}
+
+.report-title {
+    color: var(--color-primary);
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+}
+
+.report-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.student-info {
+    background-color: var(--background-color);
+    padding: 1.5rem;
+    border-radius: 10px;
+}
+
+.student-info h2 {
+    color: var(--color-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.student-info p {
+    margin-bottom: 0.5rem;
+}
+
+/* Estilos para impressão */
+@media print {
+    .sidebar, .sidebar-toggle, .report-actions {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+
+    .report-page .container-fluid {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+}

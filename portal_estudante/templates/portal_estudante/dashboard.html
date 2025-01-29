@@ -1,341 +1,279 @@
+{% extends 'portal_estudante/base.html' %}
 {% load static %}
 {% load custom_filters %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal do Aluno - SUAP</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <link rel="icon" href="{% static 'img/suap-icon.png' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <!-- Toggle Button -->
-    <button id="sidebarToggle" class="sidebar-toggle">
-        <i class="fas fa-chevron-left"></i>
-    </button>
 
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h1 class="sidebar-title">Portal do Aluno</h1>
-            {% if user_data %}
-                <div class="sidebar-user">
-                    <p class="mb-1">Olá, {{ user_data.nome_usual|default:user_data.nome }}</p>
-                </div>
-            {% endif %}
-        </div>
+{% block extra_css %}
+<!-- CSS específico do dashboard, se necessário -->
+{% endblock %}
 
-        <div class="sidebar-content">
-            <!-- Links Úteis -->
-            <div class="sidebar-section">
-                <h6 class="sidebar-section-title">Links Úteis</h6>
-                <div class="sidebar-links">
-                    <a href="https://suap.ifrn.edu.br" target="_blank" class="sidebar-link">
-                        <i class="fas fa-external-link-alt"></i>
-                        SUAP
-                    </a>
-                    <a href="https://portal.ifrn.edu.br" target="_blank" class="sidebar-link">
-                        <i class="fas fa-university"></i>
-                        Portal IFRN
-                    </a>
+{% block content %}
+{% if not user_data %}
+    <div class="row">
+        <div class="col-md-6 offset-md-3 text-center">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Bem-vindo ao Portal do Aluno</h5>
+                    <p class="card-text">Para acessar suas informações, faça login com sua conta SUAP.</p>
+                    <a href="{% url 'portal_estudante:login' %}" class="btn btn-primary">Entrar com SUAP</a>
                 </div>
             </div>
         </div>
-
-        <div class="sidebar-footer">
-            {% if user_data %}
-                <div class="version-info mb-3">
-                    <small class="text">v1.0.0</small>
-                </div>
-                <form action="{% url 'portal_estudante:logout' %}" method="post" class="sidebar-logout">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-secondary btn-sm">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Sair
-                    </button>
-                </form>
-            {% endif %}
-        </div>
     </div>
-
-    <!-- Main Content -->
-    <div class="main-content" id="mainContent">
-        <div class="container-fluid">
-            {% if not user_data %}
-                <div class="row">
-                    <div class="col-md-6 offset-md-3 text-center">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Bem-vindo ao Portal do Aluno</h5>
-                                <p class="card-text">Para acessar suas informações, faça login com sua conta SUAP.</p>
-                                <a href="{% url 'portal_estudante:login' %}" class="btn btn-primary">Entrar com SUAP</a>
-                            </div>
-                        </div>
-                    </div>
+{% else %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Informações do Aluno</h5>
+                    <p><strong>Nome:</strong> {{ user_data.nome_registro }}</p>
+                    <p><strong>Matrícula:</strong> {{ user_data.identificacao }}</p>
+                    <p><strong>Curso:</strong> {{ user_data.curso }}</p>
+                    <p><strong>Campus:</strong> {{ user_data.campus }}</p>
                 </div>
-            {% else %}
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Informações do Aluno</h5>
-                                <p><strong>Nome:</strong> {{ user_data.nome_registro }}</p>
-                                <p><strong>Matrícula:</strong> {{ user_data.identificacao }}</p>
-                                <p><strong>Curso:</strong> {{ user_data.curso }}</p>
-                                <p><strong>Campus:</strong> {{ user_data.campus }}</p>
-                            </div>
-                        </div>
+            </div>
 
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Períodos</h5>
-                                <div class="list-group">
-                                    {% if periods %}
-                                        {% for period in periods %}
-                                            <a href="?ano={{ period.ano_letivo }}&periodo={{ period.periodo_letivo }}"
-                                               class="list-group-item list-group-item-action {% if request.GET.ano == period.ano_letivo and request.GET.periodo == period.periodo_letivo %}active{% endif %}"
-                                               onclick="showTableLoading()">
-                                                {{ period.ano_letivo }}.{{ period.periodo_letivo }}
-                                            </a>
-                                        {% endfor %}
-                                    {% else %}
-                                        <div class="text-muted">Nenhum período encontrado</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Loading overlay -->
-                        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-                            <div class="spinner-border" style="color: var(--color-primary)" role="status">
-                                <span class="visually-hidden">Carregando...</span>
-                            </div>
-                        </div>
-
-                        <!-- Período atual -->
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title mb-4">Período Atual</h5>
-                                <div class="periodo-atual">
-                                    {% if request.GET.ano and request.GET.periodo %}
-                                        {{ request.GET.ano }}.{{ request.GET.periodo }}
-                                    {% else %}
-                                        {% with latest_period=periods|first %}
-                                            {% if latest_period.ano_letivo %}
-                                                {{ latest_period.ano_letivo }}.{{ latest_period.periodo_letivo }}
-                                            {% else %}
-                                                {{ latest_period.ano }}.{{ latest_period.periodo }}
-                                            {% endif %}
-                                        {% endwith %}
-                                    {% endif %}
-                                </div>
-                                <p class="text-muted small mt-3 mb-0 text-center">
-                                    Clique em um período na lista acima para ver as notas
-                                </p>
-                            </div>
-                        </div>
-
-                        {% if grades %}
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title mb-3">Relatório Detalhado</h5>
-                                <p class="card-text mb-4">
-                                    Veja um relatório completo de cada disciplina, incluindo:
-                                    <ul class="mb-4">
-                                        <li>Situação atual de notas</li>
-                                        <li>Frequência por disciplina</li>
-                                        <li>Análise detalhada do desempenho</li>
-                                    </ul>
-                                </p>
-                                <a href="{% url 'portal_estudante:report' %}?ano={{ request.GET.ano }}&periodo={{ request.GET.periodo }}" 
-                                   class="btn btn-primary" 
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Períodos</h5>
+                    <div class="list-group">
+                        {% if periods %}
+                            {% for period in periods %}
+                                <a href="?ano={{ period.ano_letivo }}&periodo={{ period.periodo_letivo }}"
+                                   class="list-group-item list-group-item-action {% if request.GET.ano == period.ano_letivo and request.GET.periodo == period.periodo_letivo %}active{% endif %}"
                                    onclick="showTableLoading()">
-                                    Ver Relatório Detalhado
+                                    {{ period.ano_letivo }}.{{ period.periodo_letivo }}
                                 </a>
-                            </div>
-                        </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-muted">Nenhum período encontrado</div>
                         {% endif %}
                     </div>
-
-                    <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Resumo Acadêmico</h5>
-                                <div class="row text-center">
-                                    <div class="col-4">
-                                        <h3>{{ summary.total_subjects }}</h3>
-                                        <p>Total de Disciplinas</p>
-                                    </div>
-                                    <div class="col-4">
-                                        <h3 class="status-approved">{{ summary.approved_subjects }}</h3>
-                                        <p>Aprovadas</p>
-                                    </div>
-                                    <div class="col-4">
-                                        <h3 class="status-ongoing">{{ summary.at_risk_subjects }}</h3>
-                                        <p>Cursando</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                       
-
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Boletim</h5>
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th class="border-0">Disciplina</th>
-                                                <th class="border-0 text-center">C. H.</th>
-                                                <th class="border-0 text-center">Aulas Dadas</th>
-                                                <th class="border-0 text-center">Faltas</th>
-                                                <th class="border-0 text-center">Freq.</th>
-                                                <th class="border-0 text-center">Nota 1</th>
-                                                <th class="border-0 text-center">Nota 2</th>
-                                                <th class="border-0 text-center">Média</th>
-                                                <th class="border-0 text-center">Final</th>
-                                                <th class="border-0 text-center">Média Final</th>
-                                                <th class="border-0 text-center">Status</th>
-                                                <th class="border-0 text-center">Ações</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for subject in grades %}
-                                                {% with discipline=disciplines|filter_by_name:subject.disciplina %}
-                                                <tr class="align-middle">
-                                                    <td class="border-0">{{ subject.disciplina }}</td>
-                                                    <td class="border-0 text-center">{{ discipline.ch_total_aula|default:subject.carga_horaria }}</td>
-                                                    <td class="border-0 text-center">{{ subject.carga_horaria_cumprida|default:"0" }}</td>
-                                                    <td class="border-0 text-center">{{ subject.numero_faltas }}</td>
-                                                    <td class="border-0 text-center">{{ subject.percentual_carga_horaria_frequentada|floatformat:1 }}%</td>
-                                                    <td class="border-0 text-center">{{ subject.nota_etapa_1.nota|default:"--" }}</td>
-                                                    <td class="border-0 text-center">{{ subject.nota_etapa_2.nota|default:"--" }}</td>
-                                                    <td class="border-0 text-center">{{ subject.media_disciplina|default:"--" }}</td>
-                                                    <td class="border-0 text-center">{{ subject.nota_avaliacao_final.nota|default:"--" }}</td>
-                                                    <td class="border-0 text-center">{{ subject.media_final_disciplina|default:"--" }}</td>
-                                                    <td class="border-0 text-center">
-                                                        {% if subject.situacao == "Aprovado" %}
-                                                            <span class="status-approved">{{ subject.situacao }}</span>
-                                                        {% else %}
-                                                            <span class="status-ongoing">Cursando</span>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td class="border-0 text-center">
-                                                        <button class="btn btn-sm btn-info" onclick="calcularNecessario('{{ subject.disciplina }}', {{ subject.nota_etapa_1.nota|default:0 }}, {{ subject.nota_etapa_2.nota|default:0 }}, {{ subject.carga_horaria }}, {{ subject.numero_faltas }})">
-                                                            Calcular
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                {% endwith %}
-                                            {% endfor %}
-                                            <!-- Totals Row -->
-                                            <tr class="table-light fw-bold">
-                                                <td class="border-0 text-end">Total:</td>
-                                                <td class="border-0 text-center">{{ totals.total_classes }}</td>
-                                                <td class="border-0 text-center">{{ totals.total_classes_given }}</td>
-                                                <td class="border-0 text-center">{{ totals.total_absences }}</td>
-                                                <td class="border-0 text-center">{{ totals.total_frequency }}%</td>
-                                                <td class="border-0 text-center" colspan="7">--</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                         <!-- Contador para Férias -->
-                         <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title mb-4">Contagem para as Férias</h5>
-                                <div class="countdown-container text-center">
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <h3 id="countdown-days">--</h3>
-                                            <p>Dias</p>
-                                        </div>
-                                        <div class="col-3">
-                                            <h3 id="countdown-hours">--</h3>
-                                            <p>Horas</p>
-                                        </div>
-                                        <div class="col-3">
-                                            <h3 id="countdown-minutes">--</h3>
-                                            <p>Minutos</p>
-                                        </div>
-                                        <div class="col-3">
-                                            <h3 id="countdown-seconds">--</h3>
-                                            <p>Segundos</p>
-                                        </div>
-                                    </div>
-                                    <p class="text-muted small mt-3">Férias começam em 17/03/2025</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Card para mostrar os cálculos -->
-                        <div class="card" id="calculosCard" style="display: none;">
-                            <div class="card-body">
-                                <h5 class="card-title">Cálculos da Disciplina <span id="disciplinaNome"></span></h5>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="card mb-3">
-                                            <div class="card-body">
-                                                <h6 class="card-subtitle mb-2 text-muted">Situação Atual</h6>
-                                                <p class="mb-1"><strong>Nota 1:</strong> <span id="nota1Atual"></span></p>
-                                                <p class="mb-1"><strong>Nota 2:</strong> <span id="nota2Atual"></span></p>
-                                                <p class="mb-1"><strong>Média Atual:</strong> <span id="mediaAtual"></span></p>
-                                                <p class="mb-1"><strong>Situação:</strong> <span id="situacaoAtual"></span></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="card mb-3">
-                                            <div class="card-body">
-                                                <h6 class="card-subtitle mb-2 text-muted">O que precisa</h6>
-                                                <div id="necessidadeNotas"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h6 class="card-subtitle mb-2 text-muted">Situação das Faltas</h6>
-                                                <p class="mb-1"><strong>Carga Horária:</strong> <span id="cargaHoraria"></span> aulas</p>
-                                                <p class="mb-1"><strong>Limite de Faltas:</strong> <span id="limiteFaltas"></span> aulas</p>
-                                                <p class="mb-1"><strong>Faltas Atuais:</strong> <span id="faltasAtuais"></span> aulas</p>
-                                                <p class="mb-1"><strong>Pode Faltar:</strong> <span id="podeFaltar"></span></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Footer -->
-                        <footer class="mt-5 mb-4 text-center text-muted">
-                            <div class="container">
-                                <p class="mb-1">Portal do Aluno - SUAP</p>
-                                <p class="mb-0 small">Desenvolvido para facilitar sua vida acadêmica 🚀</p>
-                                <a href="https://github.com/ErisvaldoBalbino/portal-do-aluno-suap" 
-                                target="_blank" 
-                                class="text-muted text-decoration-none">
-                                <i class="fab fa-github"></i> Ver no GitHub
-                            </a>  
-                            </div>
-                        </footer>
-                    </div>
                 </div>
+            </div>
+
+            <!-- Loading overlay -->
+            <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                <div class="spinner-border" style="color: var(--color-primary)" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+            </div>
+
+            <!-- Período atual -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Período Atual</h5>
+                    <div class="periodo-atual">
+                        {% if request.GET.ano and request.GET.periodo %}
+                            {{ request.GET.ano }}.{{ request.GET.periodo }}
+                        {% else %}
+                            {% with latest_period=periods|first %}
+                                {% if latest_period.ano_letivo %}
+                                    {{ latest_period.ano_letivo }}.{{ latest_period.periodo_letivo }}
+                                {% else %}
+                                    {{ latest_period.ano }}.{{ latest_period.periodo }}
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                    <p class="text-muted small mt-3 mb-0 text-center">
+                        Clique em um período na lista acima para ver as notas
+                    </p>
+                </div>
+            </div>
+
+            {% if grades %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Relatório Detalhado</h5>
+                    <p class="card-text mb-4">
+                        Veja um relatório completo de cada disciplina, incluindo:
+                        <ul class="mb-4">
+                            <li>Situação atual de notas</li>
+                            <li>Frequência por disciplina</li>
+                            <li>Análise detalhada do desempenho</li>
+                        </ul>
+                    </p>
+                    <a href="{% url 'portal_estudante:report' %}?ano={{ request.GET.ano }}&periodo={{ request.GET.periodo }}" 
+                       class="btn btn-primary" 
+                       onclick="showTableLoading()">
+                        Ver Relatório Detalhado
+                    </a>
+                </div>
+            </div>
             {% endif %}
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/dashboard.js' %}"></script>
-    <script src="{% static 'js/dashboard-sidebar-toggle.js' %}"></script>
-    <script src="{% static 'js/countdown.js' %}"></script>
-</body>
-</html> 
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Resumo Acadêmico</h5>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h3>{{ summary.total_subjects }}</h3>
+                            <p>Total de Disciplinas</p>
+                        </div>
+                        <div class="col-4">
+                            <h3 class="status-approved">{{ summary.approved_subjects }}</h3>
+                            <p>Aprovadas</p>
+                        </div>
+                        <div class="col-4">
+                            <h3 class="status-ongoing">{{ summary.at_risk_subjects }}</h3>
+                            <p>Cursando</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Boletim</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="border-0">Disciplina</th>
+                                    <th class="border-0 text-center">C. H.</th>
+                                    <th class="border-0 text-center">Aulas Dadas</th>
+                                    <th class="border-0 text-center">Faltas</th>
+                                    <th class="border-0 text-center">Freq.</th>
+                                    <th class="border-0 text-center">Nota 1</th>
+                                    <th class="border-0 text-center">Nota 2</th>
+                                    <th class="border-0 text-center">Média</th>
+                                    <th class="border-0 text-center">Final</th>
+                                    <th class="border-0 text-center">Média Final</th>
+                                    <th class="border-0 text-center">Status</th>
+                                    <th class="border-0 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subject in grades %}
+                                    {% with discipline=disciplines|filter_by_name:subject.disciplina %}
+                                    <tr class="align-middle">
+                                        <td class="border-0">{{ subject.disciplina }}</td>
+                                        <td class="border-0 text-center">{{ discipline.ch_total_aula|default:subject.carga_horaria }}</td>
+                                        <td class="border-0 text-center">{{ subject.carga_horaria_cumprida|default:"0" }}</td>
+                                        <td class="border-0 text-center">{{ subject.numero_faltas }}</td>
+                                        <td class="border-0 text-center">{{ subject.percentual_carga_horaria_frequentada|floatformat:1 }}%</td>
+                                        <td class="border-0 text-center">{{ subject.nota_etapa_1.nota|default:"--" }}</td>
+                                        <td class="border-0 text-center">{{ subject.nota_etapa_2.nota|default:"--" }}</td>
+                                        <td class="border-0 text-center">{{ subject.media_disciplina|default:"--" }}</td>
+                                        <td class="border-0 text-center">{{ subject.nota_avaliacao_final.nota|default:"--" }}</td>
+                                        <td class="border-0 text-center">{{ subject.media_final_disciplina|default:"--" }}</td>
+                                        <td class="border-0 text-center">
+                                            {% if subject.situacao == "Aprovado" %}
+                                                <span class="status-approved">{{ subject.situacao }}</span>
+                                            {% else %}
+                                                <span class="status-ongoing">Cursando</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="border-0 text-center">
+                                            <button class="btn btn-sm btn-info" onclick="calcularNecessario('{{ subject.disciplina }}', {{ subject.nota_etapa_1.nota|default:0 }}, {{ subject.nota_etapa_2.nota|default:0 }}, {{ subject.carga_horaria }}, {{ subject.numero_faltas }})">
+                                                Calcular
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endwith %}
+                                {% endfor %}
+                                <!-- Totals Row -->
+                                <tr class="table-light fw-bold">
+                                    <td class="border-0 text-end">Total:</td>
+                                    <td class="border-0 text-center">{{ totals.total_classes }}</td>
+                                    <td class="border-0 text-center">{{ totals.total_classes_given }}</td>
+                                    <td class="border-0 text-center">{{ totals.total_absences }}</td>
+                                    <td class="border-0 text-center">{{ totals.total_frequency }}%</td>
+                                    <td class="border-0 text-center" colspan="7">--</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contador para Férias -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Contagem para as Férias</h5>
+                    <div class="countdown-container text-center">
+                        <div class="row">
+                            <div class="col-3">
+                                <h3 id="countdown-days">--</h3>
+                                <p>Dias</p>
+                            </div>
+                            <div class="col-3">
+                                <h3 id="countdown-hours">--</h3>
+                                <p>Horas</p>
+                            </div>
+                            <div class="col-3">
+                                <h3 id="countdown-minutes">--</h3>
+                                <p>Minutos</p>
+                            </div>
+                            <div class="col-3">
+                                <h3 id="countdown-seconds">--</h3>
+                                <p>Segundos</p>
+                            </div>
+                        </div>
+                        <p class="text-muted small mt-3">Férias começam em 17/03/2025</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card para mostrar os cálculos -->
+            <div class="card" id="calculosCard" style="display: none;">
+                <div class="card-body">
+                    <h5 class="card-title">Cálculos da Disciplina <span id="disciplinaNome"></span></h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">Situação Atual</h6>
+                                    <p class="mb-1"><strong>Nota 1:</strong> <span id="nota1Atual"></span></p>
+                                    <p class="mb-1"><strong>Nota 2:</strong> <span id="nota2Atual"></span></p>
+                                    <p class="mb-1"><strong>Média Atual:</strong> <span id="mediaAtual"></span></p>
+                                    <p class="mb-1"><strong>Situação:</strong> <span id="situacaoAtual"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">O que precisa</h6>
+                                    <div id="necessidadeNotas"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">Situação das Faltas</h6>
+                                    <p class="mb-1"><strong>Carga Horária:</strong> <span id="cargaHoraria"></span> aulas</p>
+                                    <p class="mb-1"><strong>Limite de Faltas:</strong> <span id="limiteFaltas"></span> aulas</p>
+                                    <p class="mb-1"><strong>Faltas Atuais:</strong> <span id="faltasAtuais"></span> aulas</p>
+                                    <p class="mb-1"><strong>Pode Faltar:</strong> <span id="podeFaltar"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-5 mb-4 text-center text-muted">
+                <div class="container">
+                    <p class="mb-1">Portal do Aluno - SUAP</p>
+                    <p class="mb-0 small">Desenvolvido para facilitar sua vida acadêmica 🚀</p>
+                    <a href="https://github.com/ErisvaldoBalbino/portal-do-aluno-suap" 
+                    target="_blank" 
+                    class="text-muted text-decoration-none">
+                    <i class="fab fa-github"></i> Ver no GitHub
+                </a>  
+                </div>
+            </footer>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+<script src="{% static 'js/countdown.js' %}"></script>
+{% endblock %} 
