@@ -215,7 +215,6 @@ footer p {
 }
 
 .sidebar-toggle:hover {
-    background-color: var(--color-primary);
     filter: brightness(110%);
 }
 
@@ -241,6 +240,26 @@ footer p {
     flex-direction: column;
     transform: translateX(0);
     transition: transform 0.3s ease;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .sidebar.active {
@@ -371,12 +390,12 @@ footer p {
     color: var(--color-primary);
 }
 
-/* Sidebar Responsivo */
+/* Responsivo */
 @media (max-width: 768px) {
     .sidebar {
-        width: 100%;
-        max-width: 100%;
+        width: 70%;
         transform: translateX(-100%);
+        padding-bottom: 5rem;
     }
 
     .sidebar.active {
@@ -385,27 +404,47 @@ footer p {
 
     .main-content {
         margin-left: 0;
-    }
-
-    .main-content.sidebar-active {
-        margin-left: 0;
+        padding: 1rem;
     }
 
     .sidebar-toggle {
-        display: flex;
+        left: 0;
+    }
+
+    .sidebar-toggle.active {
+        left: 70%;
+    }
+
+    /* Overlay quando sidebar está aberta */
+    .main-content::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(3px);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 99;
+        pointer-events: none;
+    }
+
+    .main-content.expanded::before {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: all;
     }
 }
 
 @media (max-width: 576px) {
     .sidebar {
-        width: 300px;
+        width: 85%;
     }
 
-    .sidebar-toggle {
-        left: 0%;
-    }
-    
     .sidebar-toggle.active {
-        left: 300px;
+        left: 85%;
     }
 }
