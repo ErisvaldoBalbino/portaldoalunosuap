@@ -35,8 +35,7 @@ body {
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .card-title {
@@ -78,7 +77,6 @@ body {
 
 .list-group-item:hover {
     background-color: rgba(30, 50, 49, 0.1);
-    transform: translateY(-2px);
 }
 
 .list-group-item.active {
@@ -163,7 +161,6 @@ body {
 .btn-outline-light:hover {
     background-color: var(--color-card);
     color: var(--color-primary);
-    transform: translateY(-2px);
 }
 
 #calculosCard {
@@ -207,7 +204,7 @@ footer p {
 }
 
 .btn-info:hover {
-    transform: translateY(-2px);
+    opacity: 0.9;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
