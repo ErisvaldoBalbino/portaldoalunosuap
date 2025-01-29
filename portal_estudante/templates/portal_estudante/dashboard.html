@@ -150,7 +150,9 @@
                                         <li>Análise detalhada do desempenho</li>
                                     </ul>
                                 </p>
-                                <a href="{% url 'portal_estudante:report' %}?ano={{ request.GET.ano }}&periodo={{ request.GET.periodo }}" class="btn btn-primary">
+                                <a href="{% url 'portal_estudante:report' %}?ano={{ request.GET.ano }}&periodo={{ request.GET.periodo }}" 
+                                   class="btn btn-primary" 
+                                   onclick="showTableLoading()">
                                     Ver Relatório Detalhado
                                 </a>
                             </div>
