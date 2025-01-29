@@ -166,4 +166,19 @@ class SUAPAPI:
             return response.json()
         except requests.exceptions.RequestException as e:
             #logger.error(f"Erro ao buscar notas do estudante: {e}")
+            return None
+
+    def get_diaries(self, semestre: str) -> Optional[List[Dict[str, Any]]]:
+        """Busca os diários e disciplinas do semestre"""
+        if not self.access_token:
+            return None
+        
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        url = f"{self.API_URL}v2/minhas-informacoes/meus-diarios/{semestre}/"
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
             return None 
