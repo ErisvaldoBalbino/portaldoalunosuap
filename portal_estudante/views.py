@@ -61,82 +61,64 @@ def oauth_callback(request):
     
     return redirect('portal_estudante:dashboard')
 
-def student_dashboard(request):
-    """Exibe o dashboard do estudante"""
-    if 'access_token' not in request.session:
+def dashboard(request):
+    """Renderiza o dashboard com os dados do usuário"""
+    if not request.session.get('access_token'):
         return redirect('portal_estudante:login')
     
     suap_api = SUAPAPI()
-    suap_api.access_token = request.session['access_token']
+    suap_api.access_token = request.session.get('access_token')
     
-    # Busca dados do usuário e notas
-    user_data = request.session.get('user_data', {})
-    periods_data = suap_api.get_academic_periods() or []
-    
-    # Pega o período selecionado ou o mais recente
-    selected_year = request.GET.get('ano')
-    selected_period = request.GET.get('periodo')
-    
-    # Se não tiver período selecionado e houver períodos disponíveis, usa o mais recente
-    if (not selected_year or not selected_period) and periods_data:
-        selected_year = str(periods_data[0].get('ano_letivo'))
-        selected_period = str(periods_data[0].get('periodo_letivo'))
-    
-    # Busca notas e diários apenas se tiver um período selecionado
-    grades_data = []
-    diaries_data = []
-    if selected_year and selected_period:
-        grades_data = suap_api.get_user_grades(selected_year, selected_period) or []
-        semester = f"{selected_year}/{selected_period}"
-        diaries_data = suap_api.get_diaries(semester) or []
-
-    # Calcula totais gerais
-    totals = {
-        'total_classes': 0,
-        'total_classes_given': 0,
-        'total_absences': 0,
-        'total_frequency': 0
-    }
-    
-    summary = {
-        'total_subjects': len(grades_data) if isinstance(grades_data, list) else 0,
-        'approved_subjects': 0,
-        'at_risk_subjects': 0
-    }
-    
-    if isinstance(grades_data, list):
-        for subject in grades_data:
-            # Calcula totais de aulas e faltas
-            ch = int(subject.get('carga_horaria', 0))
-            ch_cumprida = int(subject.get('carga_horaria_cumprida', 0))
-            faltas = int(subject.get('numero_faltas', 0))
-            totals['total_classes'] += ch
-            totals['total_classes_given'] += ch_cumprida
-            totals['total_absences'] += faltas
-            
-            # Calcula estatísticas de aprovação
-            if subject.get('situacao') == 'Aprovado':
-                summary['approved_subjects'] += 1
-            else:
-                summary['at_risk_subjects'] += 1
+    try:
+        user_data = request.session.get('user_data', {})
+        periods = suap_api.get_academic_periods()
         
-        # Calcula frequência total
-        if totals['total_classes_given'] > 0:
-            totals['total_frequency'] = round(
-                ((totals['total_classes_given'] - totals['total_absences']) / totals['total_classes_given']) * 100,
-                2
-            )
-    
-    context = {
-        'user_data': user_data,
-        'grades': grades_data,
-        'disciplines': diaries_data,
-        'periods': periods_data,
-        'totals': totals,
-        'summary': summary
-    }
-    
-    return render(request, 'portal_estudante/dashboard.html', context)
+        # Se não houver período selecionado, usa o mais recente
+        selected_year = request.GET.get('ano')
+        selected_period = request.GET.get('periodo')
+        
+        if not selected_year or not selected_period:
+            if periods:
+                latest_period = periods[0]  # O primeiro é o mais recente
+                selected_year = latest_period.get('ano_letivo') or latest_period.get('ano')
+                selected_period = latest_period.get('periodo_letivo') or latest_period.get('periodo')
+                # Redireciona para a URL com os parâmetros corretos
+                return redirect(f"{reverse('portal_estudante:dashboard')}?ano={selected_year}&periodo={selected_period}")
+        
+        grades = suap_api.get_user_grades(selected_year, selected_period) if selected_year and selected_period else []
+        semester = f"{selected_year}/{selected_period}"
+        disciplines = suap_api.get_diaries(semester) if selected_year and selected_period else []
+        
+        # Cálculo dos totais
+        totals = calculate_totals(grades) if grades else {
+            'total_classes': 0,
+            'total_absences': 0,
+            'total_frequency': 0,
+            'total_classes_given': 0
+        }
+        
+        # Cálculo do resumo
+        summary = calculate_summary(grades) if grades else {
+            'total_subjects': 0,
+            'approved_subjects': 0,
+            'at_risk_subjects': 0
+        }
+        
+        context = {
+            'user_data': user_data,
+            'periods': periods,
+            'grades': grades,
+            'disciplines': disciplines,
+            'totals': totals,
+            'summary': summary
+        }
+        
+        return render(request, 'portal_estudante/dashboard.html', context)
+        
+    except Exception as e:
+        logger.error(f"Erro ao acessar dados do SUAP: {str(e)}")
+        request.session.flush()
+        return redirect('portal_estudante:login')
 
 def get_student_info(request, registration):
     """Busca informações do estudante pela SUAP API"""
@@ -233,3 +215,45 @@ def generate_report(request):
     }
     
     return render(request, 'portal_estudante/report.html', context)
+
+def calculate_totals(grades):
+    """Calcula os totais de aulas e frequência"""
+    totals = {
+        'total_classes': 0,
+        'total_classes_given': 0,
+        'total_absences': 0,
+        'total_frequency': 0
+    }
+    
+    for subject in grades:
+        ch = int(subject.get('carga_horaria', 0))
+        ch_cumprida = int(subject.get('carga_horaria_cumprida', 0))
+        faltas = int(subject.get('numero_faltas', 0))
+        
+        totals['total_classes'] += ch
+        totals['total_classes_given'] += ch_cumprida
+        totals['total_absences'] += faltas
+    
+    if totals['total_classes_given'] > 0:
+        totals['total_frequency'] = round(
+            ((totals['total_classes_given'] - totals['total_absences']) / totals['total_classes_given']) * 100,
+            2
+        )
+    
+    return totals
+
+def calculate_summary(grades):
+    """Calcula o resumo de disciplinas"""
+    summary = {
+        'total_subjects': len(grades),
+        'approved_subjects': 0,
+        'at_risk_subjects': 0
+    }
+    
+    for subject in grades:
+        if subject.get('situacao') == 'Aprovado':
+            summary['approved_subjects'] += 1
+        else:
+            summary['at_risk_subjects'] += 1
+    
+    return summary
