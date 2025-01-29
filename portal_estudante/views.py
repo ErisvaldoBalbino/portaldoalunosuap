@@ -426,6 +426,10 @@ def export_csv(request):
     
     # Escreve os dados
     for subject in grades_data:
+        # Obtém a frequência e arredonda para 2 casas decimais
+        frequencia = float(subject.get('percentual_carga_horaria_frequentada', 0))
+        frequencia_formatada = round(frequencia, 2)
+        
         writer.writerow([
             subject.get('disciplina', ''),
             subject.get('nota_etapa_1', {}).get('nota', ''),
@@ -435,7 +439,7 @@ def export_csv(request):
             subject.get('media_final_disciplina', ''),
             subject.get('numero_faltas', '0'),
             subject.get('carga_horaria', '0'),
-            subject.get('percentual_carga_horaria_frequentada', '0'),
+            frequencia_formatada,
             subject.get('situacao', 'Cursando')
         ])
     
