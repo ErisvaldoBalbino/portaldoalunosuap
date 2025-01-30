@@ -1,0 +1,187 @@
+{% extends 'portal_estudante/base.html' %}
+{% load static %}
+
+{% block title %}Simulador de Notas - Portal do Aluno{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/simulator.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">Simulador de Notas</h2>
+                
+                <!-- Seleção do Tipo de Curso -->
+                <div class="form-group mb-4">
+                    <label class="form-label">Tipo de Curso</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="courseType" id="superior" value="superior" checked>
+                        <label class="btn btn-outline-primary" for="superior">Superior</label>
+                        
+                        <input type="radio" class="btn-check" name="courseType" id="technical" value="technical">
+                        <label class="btn btn-outline-primary" for="technical">Técnico</label>
+                    </div>
+                </div>
+
+                <!-- Notas -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="form-label">Nota 1</label>
+                            <input type="number" class="form-control" id="nota1" min="0" max="100" step="1">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="form-label">Nota 2</label>
+                            <input type="number" class="form-control" id="nota2" min="0" max="100" step="1">
+                        </div>
+                    </div>
+                    <div class="col-md-3 technical-only" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Nota 3</label>
+                            <input type="number" class="form-control" id="nota3" min="0" max="100" step="1">
+                        </div>
+                    </div>
+                    <div class="col-md-3 technical-only" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Nota 4</label>
+                            <input type="number" class="form-control" id="nota4" min="0" max="100" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Faltas -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Aulas</label>
+                            <input type="number" class="form-control" id="cargaHoraria" min="0" step="1">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Faltas Atuais</label>
+                            <input type="number" class="form-control" id="faltas" min="0" step="1">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Limite de Faltas</label>
+                            <input type="text" class="form-control" id="limiteFaltas" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão Calcular -->
+                <button class="btn btn-primary w-100" onclick="calcularSimulacao()">
+                    Calcular Simulação
+                </button>
+
+            </div>
+        </div>
+        <!-- Resultados -->
+        <div id="resultados" class="mt-4" style="display: none;">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Resultados da Simulação</h5>
+                    
+                    <!-- Média Parcial -->
+                    <div class="result-item">
+                        <span class="result-label">Média Parcial:</span>
+                        <span class="result-value" id="mediaParcial">--</span>
+                    </div>
+
+                    <!-- Situação Atual -->
+                    <div class="result-item">
+                        <span class="result-label">Situação Atual:</span>
+                        <span class="result-value" id="situacaoAtual">--</span>
+                    </div>
+
+                    <!-- Necessidade de Nota Final -->
+                    <div id="necessidadeFinal" style="display: none;">
+                        <h6 class="mt-4 mb-3">Nota Necessária na Prova Final</h6>
+                        <div id="possibilidadesFinais"></div>
+                    </div>
+
+                    <!-- Situação de Faltas -->
+                    <div class="mt-4">
+                        <h6>Situação das Faltas</h6>
+                        <div class="result-item">
+                            <span class="result-label">Pode Faltar Ainda:</span>
+                            <span class="result-value" id="podeFaltar">--</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Frequência Atual:</span>
+                            <span class="result-value" id="frequenciaAtual">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+
+        <!-- Footer Explicativo Expansível -->
+        <div class="card mt-4">
+            <div class="card-header bg-transparent">
+                <button class="btn btn-link w-100 text-start text-decoration-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#explicacaoCalculos" aria-expanded="false" aria-controls="explicacaoCalculos">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h6 mb-0">Como os cálculos são feitos?</span>
+                        <i class="fas fa-chevron-down transition-icon"></i>
+                    </div>
+                </button>
+            </div>
+            
+            <div id="explicacaoCalculos" class="collapse">
+                <div class="card-body">
+                    <!-- Curso Superior -->
+                    <div class="info-section">
+                        <h6>Curso Superior</h6>
+                        <ul class="equation-list">
+                            <li>Média Parcial = (2×N1 + 3×N2) / 5</li>
+                            <li>Média Final = (Média Parcial + Nota Final) / 2</li>
+                            <li>O sistema calcula automaticamente a menor nota necessária na final baseado no resultado de três equações diferentes, 
+                                e considera a menor nota necessária para aprovação.</li>
+                            <li>Aprovação: Média ≥ 60</li>
+                        </ul>
+                    </div>
+
+                    <!-- Curso Técnico -->
+                    <div class="info-section">
+                        <h6>Curso Técnico</h6>
+                        <ul class="equation-list">
+                            <li>Média Parcial = (2×N1 + 2×N2 + 3×N3 + 3×N4) / 10</li>
+                            <li>O sistema calcula automaticamente a menor nota necessária na final baseado no resultado de cinco equações diferentes, 
+                                e considera a menor nota necessária para aprovação.</li>
+                            <li>Aprovação: Média ≥ 60</li>
+                        </ul>
+                    </div>
+
+                    <!-- Frequência -->
+                    <div class="info-section">
+                        <h6>Frequência</h6>
+                        <ul class="equation-list">
+                            <li>Limite de Faltas = 25% da Carga Horária Total</li>
+                            <li>Frequência = ((Carga Horária - Faltas) / Carga Horária) × 100</li>
+                            <li>Aprovação: Frequência ≥ 75%</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-section">
+                        <h6>Fonte</h6>
+                        <ul class="equation-list">
+                            <li><a href="https://portal.ifrn.edu.br/institucional/ensino/organizacao-didatica/" target="_blank">https://portal.ifrn.edu.br/institucional/ensino/organizacao-didatica/</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/simulator.js' %}"></script>
+{% endblock %} 
