@@ -43,9 +43,9 @@
                         <i class="fas fa-file-alt"></i>
                         Relatório
                     </a>
-                    <a href="#" class="sidebar-link" onclick="alert('Em desenvolvimento')">
-                        <i class="fas fa-calendar-alt"></i>
-                        Calendário
+                    <a href="{% url 'portal_estudante:simulator' %}" class="sidebar-link {% if request.resolver_match.url_name == 'simulator' %}active{% endif %}">
+                        <i class="fas fa-calculator"></i>
+                        Simulador
                     </a>
                 </div>
             </div>
@@ -68,12 +68,14 @@
 
         <div class="sidebar-footer">
             {% if user_data %}
+                <!--
                 <div class="version-info mb-3">
-                    <small class="text">v1.0.0</small>
+                    <small class="text">v0.0.0</small>
                 </div>
+                -->
                 <form action="{% url 'portal_estudante:logout' %}" method="post" class="sidebar-logout">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                    <button type="submit" class="btn btn-outline-light btn-sm w-100">
                         <i class="fas fa-sign-out-alt"></i>
                         Sair
                     </button>
