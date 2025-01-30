@@ -180,3 +180,8 @@ SUAP = {
     'TOKEN_URL': os.getenv('SUAP_TOKEN_URL'),
     'API_URL': os.getenv('SUAP_API_URL'),
 }
+
+SESSION_COOKIE_AGE = 3600  # 1 hora em segundos
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False # Mantém a sessão ativa mesmo após o navegador ser fechado
+SESSION_COOKIE_SECURE = True  # Requer HTTPS
+SESSION_COOKIE_HTTPONLY = True  # Previne acesso via JavaScript 
