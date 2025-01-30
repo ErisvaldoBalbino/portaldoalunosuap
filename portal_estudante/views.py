@@ -166,7 +166,7 @@ def get_student_info(request, registration):
     
     return JsonResponse(processed_data)
 
-def generate_report(request):
+def report(request):
     """Gera relatório detalhado de notas e faltas do período selecionado"""
     if 'access_token' not in request.session:
         return redirect('portal_estudante:login')
@@ -444,3 +444,15 @@ def export_csv(request):
         ])
     
     return response
+
+def simulator(request):
+    """
+    View para a página do simulador de notas.
+    """
+    if not request.session.get('access_token'):
+        return redirect('portal_estudante:login')
+        
+    context = {
+        'user_data': request.session.get('user_data', {})
+    }
+    return render(request, 'portal_estudante/simulator.html', context)
