@@ -1,4 +1,4 @@
-/* Color Variables */
+/* Variáveis Globais */
 :root {
     --color-primary: #1E3231;
     --background-color: #D4DED6;
@@ -7,20 +7,49 @@
     --color-success: #28a745;
     --color-danger: #dc3545;
     --color-ongoing: #ffc107;
+    --sidebar-width: 250px;
+    --sidebar-width-mobile: 70%;
+    --sidebar-width-small: 85%;
 }
 
-/* Base Styles */
+/* Reset e Estilos Base */
 body {
     background-color: var(--color-primary);
     color: var(--text-color);
     min-height: 100vh;
 }
 
-/* Navbar */
-.navbar-custom {
-    background-color: var(--color-primary);
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
 }
 
+/* Layout Principal */
+.main-content {
+    margin-left: var(--sidebar-width);
+    background-color: var(--background-color);
+    min-height: 100vh;
+    border-top-left-radius: 2.5rem;
+    border-bottom-left-radius: 2.5rem;
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.main-content.expanded {
+    margin-left: 0;
+}
+
+/* Componentes */
 /* Cards */
 .card {
     background-color: var(--card-background);
@@ -39,7 +68,7 @@ body {
     color: var(--color-primary);
 }
 
-/* Status Colors */
+/* Status */
 .status-approved {
     color: var(--color-success);
     font-weight: 500;
@@ -54,14 +83,7 @@ body {
     font-weight: 500;
 }
 
-/* User Info */
-.user-info {
-    color: white;
-    font-weight: 500;
-    margin-right: 1rem;
-}
-
-/* List Group */
+/* Lista de Períodos */
 .list-group-item {
     transition: all 0.2s;
     color: var(--text-color);
@@ -88,7 +110,7 @@ body {
     filter: brightness(110%);
 }
 
-/* Current Period */
+/* Período Atual */
 .periodo-atual {
     font-size: 2rem;
     font-weight: bold;
@@ -98,7 +120,7 @@ body {
     border-radius: 0.4rem;
 }
 
-/* Table */
+/* Tabelas */
 .table {
     color: var(--text-color);
     margin-bottom: 0;
@@ -125,7 +147,7 @@ body {
     white-space: nowrap;
 }
 
-/* Buttons */
+/* Botões */
 .btn-primary, .btn-info {
     background-color: var(--color-primary);
     border-color: var(--color-primary);
@@ -141,98 +163,13 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn-outline-light {
-    border-width: 2px;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-.btn-outline-light:hover {
-    background-color: var(--card-background);
-    color: var(--color-primary);
-}
-
-#calculosCard {
-    margin-top: 2rem;
-}
-
-#calculosCard .card {
-    box-shadow: none;
-    border: 1px solid rgba(0,0,0,.125);
-}
-
-/* Loading Overlay */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    backdrop-filter: blur(5px);
-}
-
-/* Footer */
-footer {
-    border-top: 1px solid var(--background-color);
-    padding-top: 2rem;
-}
-
-footer p {
-    color: var(--color-primary);
-    opacity: 0.8;
-}
-
-/* Sidebar Toggle Button */
-.sidebar-toggle {
-    position: fixed;
-    top: 50%;
-    left: 250px;
-    transform: translateY(-50%);
-    z-index: 1030;
-    background-color: var(--color-primary);
-    border: none;
-    color: white;
-    width: 16px;
-    height: 50px;
-    padding: 0;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.sidebar-toggle i {
-    font-size: 12px;
-    transition: transform 0.3s ease;
-}
-
-.sidebar-toggle:hover {
-    filter: brightness(110%);
-}
-
-.sidebar-toggle.active {
-    left: 0;
-}
-
-.sidebar-toggle.active i {
-    transform: rotate(180deg);
-}
-
-/* Sidebar e Main Content */
+/* Sidebar */
 .sidebar {
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
-    width: 250px;
+    width: var(--sidebar-width);
     background-color: var(--color-primary);
     padding: 2rem 1rem;
     z-index: 100;
@@ -244,6 +181,11 @@ footer p {
     -webkit-overflow-scrolling: touch;
 }
 
+.sidebar.active {
+    transform: translateX(-100%);
+}
+
+/* Estilização da barra de rolagem */
 .sidebar::-webkit-scrollbar {
     width: 6px;
 }
@@ -262,25 +204,7 @@ footer p {
     background: rgba(255, 255, 255, 0.3);
 }
 
-.sidebar.active {
-    transform: translateX(-100%);
-}
-
-.main-content {
-    margin-left: 250px;
-    background-color: var(--background-color);
-    min-height: 100vh;
-    border-top-left-radius: 2.5rem;
-    border-bottom-left-radius: 2.5rem;
-    padding: 2rem;
-    transition: all 0.3s ease;
-}
-
-.main-content.expanded {
-    margin-left: 0;
-}
-
-/* Estilos internos da sidebar */
+/* Componentes da Sidebar */
 .sidebar-header {
     margin-bottom: 1rem;
 }
@@ -293,7 +217,6 @@ footer p {
     margin-top: auto;
 }
 
-/* Sidebar Sections */
 .sidebar-section {
     padding: 1rem 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -312,40 +235,6 @@ footer p {
     padding: 0 1.5rem;
 }
 
-.sidebar-links {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border-left: 3px solid transparent;
-}
-
-.sidebar-link:hover {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-left-color: var(--color-success);
-}
-
-.sidebar-link.active {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.15);
-    border-left-color: var(--color-success);
-}
-
-.sidebar-link i {
-    width: 20px;
-    margin-right: 10px;
-    font-size: 1rem;
-}
-
 .sidebar-title {
     color: white;
     font-size: 1.5rem;
@@ -362,38 +251,82 @@ footer p {
     padding-left: 0.5rem;
 }
 
-.version-info {
-    text-align: center;
+/* Links da Sidebar */
+.sidebar-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.version-info small {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.sidebar-logout {
-    text-align: center;
-    margin-top: 1rem;
-}
-
-.sidebar-logout .btn-outline-secondary {
-    color: white;
-    border-color: white;
+.sidebar-link {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    width: 100%;
+    padding: 0.75rem 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-link:hover, .sidebar-link.active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left-color: var(--color-success);
+}
+
+.sidebar-link.active {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.sidebar-link i {
+    width: 20px;
+    margin-right: 10px;
+    font-size: 1rem;
+}
+
+/* Botão Toggle da Sidebar */
+.sidebar-toggle {
+    position: fixed;
+    top: 50%;
+    left: var(--sidebar-width);
+    transform: translateY(-50%);
+    z-index: 1030;
+    background-color: var(--color-primary);
+    border: none;
+    color: white;
+    width: 16px;
+    height: 50px;
+    padding: 0;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
     justify-content: center;
 }
 
-.sidebar-logout .btn-outline-secondary:hover {
-    background-color: white;
-    color: var(--color-primary);
+.sidebar-toggle:hover {
+    filter: brightness(110%);
 }
 
-/* Responsivo */
+.sidebar-toggle i {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-toggle.active {
+    left: 0;
+}
+
+.sidebar-toggle.active i {
+    transform: rotate(180deg);
+}
+
+/* Responsividade */
 @media (max-width: 768px) {
     .sidebar {
-        width: 70%;
+        width: var(--sidebar-width-mobile);
         transform: translateX(-100%);
         padding-bottom: 5rem;
     }
@@ -412,10 +345,10 @@ footer p {
     }
 
     .sidebar-toggle.active {
-        left: 70%;
+        left: var(--sidebar-width-mobile);
     }
 
-    /* Overlay quando sidebar está aberta */
+    /* Overlay */
     .main-content::before {
         content: '';
         position: fixed;
@@ -441,10 +374,10 @@ footer p {
 
 @media (max-width: 576px) {
     .sidebar {
-        width: 85%;
+        width: var(--sidebar-width-small);
     }
 
     .sidebar-toggle.active {
-        left: 85%;
+        left: var(--sidebar-width-small);
     }
 }

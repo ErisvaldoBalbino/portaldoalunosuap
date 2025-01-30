@@ -4,6 +4,8 @@
     --background-color: #D4DED6;
     --card-background: #FFFFFF;
     --text-color: #212529;
+    --color-success: #28a745;
+    --color-ongoing: #ffc107;
 }
 
 /* Navbar customizada */
@@ -81,11 +83,11 @@
 }
 
 .bg-success {
-    background-color: #28a745 !important;
+    background-color: var(--color-success) !important;
 }
 
 .bg-warning {
-    background-color: #ffc107 !important;
+    background-color: var(--color-ongoing) !important;
 }
 
 /* Botões */
