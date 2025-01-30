@@ -12,6 +12,33 @@
     --sidebar-width-small: 85%;
 }
 
+/* Banner Informativo */
+.info-banner {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 0.75rem 0;
+    font-size: 0.95rem;
+}
+
+.info-banner .banner-link {
+    color: white;
+    text-decoration: underline;
+    margin-left: 0.25rem;
+}
+
+.info-banner .banner-link:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.info-banner .btn-close-white {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.info-banner .btn-close-white:hover {
+    opacity: 1;
+}
+
 /* Reset e Estilos Base */
 body {
     background-color: var(--color-primary);
