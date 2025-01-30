@@ -144,7 +144,7 @@ function atualizarLimiteFaltas() {
 // Calcula a média para curso superior
 function calcularMediaSuperior(nota1, nota2) {
     if (isNaN(nota1) || isNaN(nota2)) return 0;
-    return (nota1 + nota2) / 2;
+    return (2 * nota1 + 3 * nota2) / 5;
 }
 
 // Calcula a média para curso técnico
