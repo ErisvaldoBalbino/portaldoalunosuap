@@ -41,7 +41,7 @@
 
 /* Reset e Estilos Base */
 body {
-    background-color: var(--background-color);
+    background-color: var(--color-primary);
     color: var(--text-color);
     min-height: 100vh;
 }
