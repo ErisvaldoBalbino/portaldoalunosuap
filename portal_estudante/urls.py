@@ -1,6 +1,6 @@
 from django.urls import path
 from django.shortcuts import redirect
-from . import views
+from portal_estudante import views
 
 app_name = 'portal_estudante'
 
