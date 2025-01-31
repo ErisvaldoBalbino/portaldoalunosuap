@@ -6,6 +6,8 @@ from django.views.generic import TemplateView
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.cache import never_cache
 from api import SUAPAPI
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -19,10 +21,33 @@ import datetime
 
 logger = logging.getLogger('student_portal')
 
+def require_suap_auth(view_func):
+    """Decorator para verificar se o usuário está autenticado via SUAP"""
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.session.get('access_token'):
+            logger.warning(f"Tentativa de acesso não autorizado à view {view_func.__name__}")
+            return redirect('portal_estudante:login')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+def require_suap_auth_cbv(view_func):
+    """Decorator para verificar se o usuário está autenticado via SUAP em Class-Based Views"""
+    def _wrapped_view(self, request, *args, **kwargs):
+        if not request.session.get('access_token'):
+            logger.warning(f"Tentativa de acesso não autorizado à view {view_func.__name__}")
+            return redirect('portal_estudante:login')
+        return view_func(self, request, *args, **kwargs)
+    return _wrapped_view
+
 class LoginView(View):
     template_name = 'portal_estudante/login.html'
     
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
     def get(self, request):
+        if request.session.get('access_token'):
+            return redirect('portal_estudante:dashboard')
+            
         if request.GET.get('auth') == 'suap':
             suap_api = SUAPAPI()
             state = secrets.token_urlsafe(32)
@@ -36,21 +61,25 @@ class LoginView(View):
         return render(request, self.template_name)
 
 class LogoutView(View):
+    @method_decorator(csrf_protect)
     @method_decorator(require_http_methods(["POST"]))
     def post(self, request):
         request.session.flush()
         return redirect('portal_estudante:login')
 
 class OAuthCallbackView(View):
+    @method_decorator(never_cache)
     def get(self, request):
         error = request.GET.get('error')
         if error:
+            logger.error(f"Erro no callback OAuth: {error}")
             return JsonResponse({'error': error}, status=400)
         
         code = request.GET.get('code')
         state = request.GET.get('state')
         
         if not state or state != request.session.get('oauth_state'):
+            logger.error("Tentativa de callback OAuth com estado inválido")
             return JsonResponse({'error': 'Parâmetro de estado inválido'}, status=400)
         
         suap_api = SUAPAPI()
@@ -58,24 +87,27 @@ class OAuthCallbackView(View):
         
         access_token = suap_api.get_token_from_code(code, redirect_uri)
         if not access_token:
+            logger.error("Falha ao obter token de acesso")
             return JsonResponse({'error': 'Não foi possível obter o token de acesso'}, status=400)
         
         user_data = suap_api.get_user_data(access_token)
         if not user_data:
+            logger.error("Falha ao obter dados do usuário")
             return JsonResponse({'error': 'Não foi possível obter os dados do usuário'}, status=400)
         
         request.session['access_token'] = access_token
         request.session['user_data'] = user_data
+        request.session['last_activity'] = datetime.datetime.now().isoformat()
         
         return redirect('portal_estudante:dashboard')
 
 class DashboardView(TemplateView):
     template_name = 'portal_estudante/dashboard.html'
     
+    @method_decorator(never_cache)
+    @method_decorator(csrf_protect)
+    @require_suap_auth_cbv
     def get(self, request, *args, **kwargs):
-        if not request.session.get('access_token'):
-            return redirect('portal_estudante:login')
-        
         suap_api = SUAPAPI()
         suap_api.access_token = request.session.get('access_token')
         
@@ -100,6 +132,9 @@ class DashboardView(TemplateView):
             grades = suap_api.get_user_grades(selected_year, selected_period) if selected_year and selected_period else []
             semester = f"{selected_year}/{selected_period}"
             disciplines = suap_api.get_diaries(semester) if selected_year and selected_period else []
+            
+            # Atualiza timestamp da última atividade
+            request.session['last_activity'] = datetime.datetime.now().isoformat()
             
             totals = self.calculate_totals(grades) if grades else {
                 'total_classes': 0,
@@ -167,10 +202,10 @@ class DashboardView(TemplateView):
         }
 
 class StudentInfoView(View):
+    @method_decorator(never_cache)
+    @method_decorator(csrf_protect)
+    @require_suap_auth_cbv
     def get(self, request, registration):
-        if 'access_token' not in request.session:
-            return JsonResponse({'error': 'Não autenticado'}, status=401)
-        
         suap_api = SUAPAPI()
         suap_api.access_token = request.session['access_token']
         
@@ -197,10 +232,10 @@ class StudentInfoView(View):
 class ReportView(TemplateView):
     template_name = 'portal_estudante/report.html'
     
+    @method_decorator(never_cache)
+    @method_decorator(csrf_protect)
+    @require_suap_auth_cbv
     def get(self, request, *args, **kwargs):
-        if 'access_token' not in request.session:
-            return redirect('portal_estudante:login')
-        
         suap_api = SUAPAPI()
         suap_api.access_token = request.session['access_token']
         
@@ -255,10 +290,9 @@ class ReportView(TemplateView):
         return report_data
 
 class ExportPDFView(View):
+    @method_decorator(never_cache)
+    @require_suap_auth_cbv
     def get(self, request):
-        if 'access_token' not in request.session:
-            return redirect('portal_estudante:login')
-        
         suap_api = SUAPAPI()
         suap_api.access_token = request.session['access_token']
         
@@ -366,10 +400,9 @@ class ExportPDFView(View):
         return response
 
 class ExportCSVView(View):
+    @method_decorator(never_cache)
+    @require_suap_auth_cbv
     def get(self, request):
-        if 'access_token' not in request.session:
-            return redirect('portal_estudante:login')
-        
         suap_api = SUAPAPI()
         suap_api.access_token = request.session['access_token']
         
@@ -406,10 +439,10 @@ class ExportCSVView(View):
 class SimulatorView(TemplateView):
     template_name = 'portal_estudante/simulator.html'
     
+    @method_decorator(never_cache)
+    @method_decorator(csrf_protect)
+    @require_suap_auth_cbv
     def get(self, request, *args, **kwargs):
-        if not request.session.get('access_token'):
-            return redirect('portal_estudante:login')
-        
         suap_api = SUAPAPI()
         suap_api.access_token = request.session.get('access_token')
         
