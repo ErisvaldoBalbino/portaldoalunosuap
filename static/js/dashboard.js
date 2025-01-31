@@ -3,6 +3,16 @@ function showTableLoading() {
     document.getElementById('loadingOverlay').style.display = 'flex';
 }
 
+function changePeriod(value) {
+    if (!value) return;
+    
+    showTableLoading();
+    const [ano, periodo] = value.split('.');
+    if (ano && periodo) {
+        window.location.href = `?ano=${ano}&periodo=${periodo}`;
+    }
+}
+
 // Função para calcular notas necessárias
 function calcularNecessario(disciplina, nota1, nota2, cargaHoraria, faltas) {
     // Mostrar o card de cálculos
