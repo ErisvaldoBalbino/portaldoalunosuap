@@ -3,6 +3,8 @@ from django.conf import settings
 from typing import Optional, Dict, Any, List
 from urllib.parse import urlencode
 import logging
+import time
+from requests.exceptions import RequestException, Timeout
 
 logger = logging.getLogger('portal_estudante')
 
@@ -15,14 +17,41 @@ class SUAPAPI:
     PERIODS_URL_2 = f"{API_URL}v2/minhas-informacoes/meus-periodos-letivos/"
     PERIODS_URL_1 = f"{API_URL}edu/periodos/"
     DEFAULT_SCOPE = ['identificacao', 'email', 'documentos_pessoais']
+    MAX_RETRIES = 3
+    TIMEOUT = 10
 
     def __init__(self):
         self.client_id = settings.SUAP['CLIENT_ID']
         self.client_secret = settings.SUAP['CLIENT_SECRET']
         self.access_token = None
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'PortalDoAluno/1.0',
+            'Accept': 'application/json'
+        })
+
+    def _make_request(self, method: str, url: str, **kwargs) -> Optional[Dict]:
+        """Método auxiliar para fazer requisições com retry e tratamento de erros"""
+        retries = 0
+        while retries < self.MAX_RETRIES:
+            try:
+                kwargs.setdefault('timeout', self.TIMEOUT)
+                response = self.session.request(method, url, **kwargs)
+                response.raise_for_status()
+                return response.json()
+            except Timeout:
+                logger.warning(f"Timeout ao acessar {url}. Tentativa {retries + 1} de {self.MAX_RETRIES}")
+            except RequestException as e:
+                logger.error(f"Erro ao acessar {url}: {str(e)}")
+                if hasattr(e.response, 'text'):
+                    logger.error(f"Resposta do servidor: {e.response.text}")
+            retries += 1
+            if retries < self.MAX_RETRIES:
+                time.sleep(1)  # Espera 1 segundo antes de tentar novamente
+        return None
 
     def get_authorization_url(self, redirect_uri: str, state: str = None) -> str:
-        """Pega a URL de autorização para o fluxo OAuth2"""
+        """Gera a URL de autorização para o fluxo OAuth2"""
         params = {
             'client_id': self.client_id,
             'redirect_uri': redirect_uri,
@@ -44,41 +73,32 @@ class SUAPAPI:
             'grant_type': 'authorization_code'
         }
         
-        try:
-            response = requests.post(self.ACCESS_TOKEN_URL, data=data)
-            response.raise_for_status()
-            self.access_token = response.json().get('access_token')
+        result = self._make_request('POST', self.ACCESS_TOKEN_URL, data=data)
+        if result:
+            self.access_token = result.get('access_token')
             return self.access_token
-        except requests.exceptions.RequestException as e:
-            print(f"Erro ao buscar token: {e}")
-            return None
+        return None
 
     def get_user_data(self, access_token: str = None) -> Optional[Dict[str, Any]]:
-        """Pega os dados do usuário autenticado da API SUAP"""
+        """Busca os dados do usuário autenticado"""
         token = access_token or self.access_token
         if not token:
+            logger.error("Token de acesso não fornecido")
             return None
         
         headers = {'Authorization': f'Bearer {token}'}
         
-        try:
-            # Busca dados básicos do usuário
-            response = requests.get(self.USER_DATA_URL, headers=headers)
-            response.raise_for_status()
-            user_data = response.json()
-            
-            # Busca dados extras do usuário
-            extra_response = requests.get(self.EXTRA_USER_DATA_URL, headers=headers)
-            extra_response.raise_for_status()
-            extra_data = extra_response.json()
-
-            if 'vinculo' in extra_data and 'curso' in extra_data['vinculo']:
-                user_data['curso'] = extra_data['vinculo']['curso']
-            
-            return user_data
-        except requests.exceptions.RequestException as e:
-            print(f"Erro ao buscar dados do usuário: {e}")
+        # Busca dados básicos do usuário
+        user_data = self._make_request('GET', self.USER_DATA_URL, headers=headers)
+        if not user_data:
             return None
+            
+        # Busca dados extras do usuário
+        extra_data = self._make_request('GET', self.EXTRA_USER_DATA_URL, headers=headers)
+        if extra_data and 'vinculo' in extra_data and 'curso' in extra_data['vinculo']:
+            user_data['curso'] = extra_data['vinculo']['curso']
+        
+        return user_data
 
     def get_user_grades(self, ano_letivo: str = None, periodo_letivo: str = None) -> Optional[Dict[str, Any]]:
         """Busca notas do usuário autenticado"""
