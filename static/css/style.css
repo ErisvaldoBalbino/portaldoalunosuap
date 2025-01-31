@@ -10,6 +10,21 @@
     --sidebar-width: 250px;
     --sidebar-width-mobile: 70%;
     --sidebar-width-small: 85%;
+    
+    /* Tamanhos de fonte padronizados */
+    --font-size-xs: 0.75rem;    /* 12px */
+    --font-size-sm: 0.875rem;   /* 14px */
+    --font-size-base: 1rem;     /* 16px */
+    --font-size-lg: 1.25rem;    /* 20px */
+    --font-size-xl: 1.5rem;     /* 24px */
+    --font-size-2xl: 2rem;      /* 32px */
+    
+    /* Espaçamentos padronizados */
+    --spacing-xs: 0.25rem;      /* 4px */
+    --spacing-sm: 0.5rem;       /* 8px */
+    --spacing-base: 1rem;       /* 16px */
+    --spacing-lg: 1.5rem;       /* 24px */
+    --spacing-xl: 2rem;         /* 32px */
 }
 
 /* Banner Informativo */
@@ -79,7 +94,7 @@ body {
 .card {
     background-color: var(--card-background);
     transition: all 0.3s ease;
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-base);
     border: none;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -91,6 +106,8 @@ body {
 
 .card-title {
     color: var(--color-primary);
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-base);
 }
 
 /* Status */
@@ -137,12 +154,13 @@ body {
 
 /* Período Atual */
 .periodo-atual {
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
     font-weight: bold;
     text-align: center;
     color: var(--color-primary);
     background-color: var(--background-color);
     border-radius: 0.4rem;
+    margin-bottom: var(--spacing-base);
 }
 
 /* Tabelas */
@@ -155,7 +173,8 @@ body {
     background-color: var(--background-color);
     color: var(--color-primary);
     font-weight: 600;
-    padding: 1rem;
+    padding: var(--spacing-base);
+    font-size: var(--font-size-base);
     white-space: nowrap;
 }
 
@@ -168,7 +187,8 @@ body {
 }
 
 .table td {
-    padding: 1rem;
+    padding: var(--spacing-base);
+    font-size: var(--font-size-base);
     white-space: nowrap;
 }
 
@@ -262,11 +282,11 @@ body {
 
 .sidebar-title {
     color: white;
-    font-size: 1.5rem;
+    font-size: var(--font-size-xl);
     font-weight: bold;
-    margin-bottom: 2rem;
+    margin-bottom: var(--spacing-xl);
     text-align: left;
-    padding-left: 0.5rem;
+    padding-left: var(--spacing-sm);
 }
 
 .sidebar-user {
@@ -414,11 +434,11 @@ body {
 
 .periodo-select {
     width: 100%;
-    padding: 0.45rem;
+    padding: var(--spacing-sm);
     border: 1px solid var(--background-color);
     border-radius: 0.4rem;
     background-color: var(--background-color);
-    font-size: 1.4rem;
+    font-size: var(--font-size-xl);
     font-weight: bold;
     color: var(--color-primary);
     text-align: center;
@@ -431,7 +451,7 @@ body {
     background-repeat: no-repeat;
     background-position: right 1rem center;
     background-size: 1.5em;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing-sm);
 }
 
 .periodo-select:focus {

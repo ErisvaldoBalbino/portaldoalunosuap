@@ -1,9 +1,26 @@
 /* Estilos específicos do simulador */
+:root {
+    /* Tamanhos de fonte padronizados */
+    --font-size-xs: 0.75rem;    /* 12px */
+    --font-size-sm: 0.875rem;   /* 14px */
+    --font-size-base: 1rem;     /* 16px */
+    --font-size-lg: 1.25rem;    /* 20px */
+    --font-size-xl: 1.5rem;     /* 24px */
+    --font-size-2xl: 2rem;      /* 32px */
+    
+    /* Espaçamentos padronizados */
+    --spacing-xs: 0.25rem;      /* 4px */
+    --spacing-sm: 0.5rem;       /* 8px */
+    --spacing-base: 1rem;       /* 16px */
+    --spacing-lg: 1.5rem;       /* 24px */
+    --spacing-xl: 2rem;         /* 32px */
+}
+
 .result-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 0;
+    padding: var(--spacing-base) 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -14,10 +31,11 @@
 .result-label {
     font-weight: 500;
     color: var(--text-color);
+    font-size: var(--font-size-base);
 }
 
 .result-value {
-    font-size: 1.1rem;
+    font-size: var(--font-size-lg);
     font-weight: 600;
     color: var(--color-primary);
 }
@@ -26,8 +44,9 @@
 .form-control {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    padding: 0.75rem;
+    padding: var(--spacing-sm);
     transition: all 0.3s ease;
+    font-size: var(--font-size-base);
 }
 
 .form-control:focus {
@@ -45,6 +64,8 @@
 .btn-outline-primary {
     color: var(--color-primary);
     border-color: var(--color-primary);
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-base);
 }
 
 .btn-outline-primary:hover {
@@ -61,22 +82,26 @@
 /* Status de aprovação */
 .status-aprovado {
     color: var(--color-success);
+    font-size: var(--font-size-base);
 }
 
 .status-reprovado {
     color: var(--color-danger);
+    font-size: var(--font-size-base);
 }
 
 .status-final {
     color: var(--color-ongoing);
+    font-size: var(--font-size-base);
 }
 
 /* Possibilidades de aprovação */
 .possibilidade-item {
     background-color: var(--background-color);
-    padding: 1rem;
+    padding: var(--spacing-base);
     border-radius: 8px;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-base);
 }
 
 .possibilidade-item:last-child {
@@ -91,7 +116,7 @@
     
     .btn-group .btn {
         border-radius: 8px !important;
-        margin-bottom: 0.5rem;
+        margin-bottom: var(--spacing-sm);
     }
     
     .btn-group .btn:last-child {
@@ -105,14 +130,16 @@
     }
     
     .result-value {
-        margin-top: 0.25rem;
+        margin-top: var(--spacing-xs);
+        font-size: var(--font-size-base);
     }
 }
 
 /* Footer Explicativo Expansível */
 .card-header .btn-link {
     color: var(--text-color);
-    padding: 0.5rem 0;
+    padding: var(--spacing-sm) 0;
+    font-size: var(--font-size-base);
 }
 
 .card-header .btn-link:hover {
@@ -137,7 +164,7 @@
 }
 
 .info-section {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--spacing-lg);
 }
 
 .info-section:last-child {
@@ -146,8 +173,9 @@
 
 .info-section h6 {
     color: var(--color-primary);
-    margin-bottom: 0.75rem;
+    margin-bottom: var(--spacing-base);
     font-weight: 600;
+    font-size: var(--font-size-base);
 }
 
 .equation-list {
@@ -157,9 +185,9 @@
 }
 
 .equation-list li {
-    padding: 0.5rem 0;
+    padding: var(--spacing-sm) 0;
     color: var(--text-color);
-    font-size: 0.95rem;
+    font-size: var(--font-size-sm);
     border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
 }
 
@@ -170,8 +198,8 @@
 /* Responsividade para o footer */
 @media (max-width: 768px) {
     .equation-list li {
-        font-size: 0.9rem;
-        padding: 0.75rem 0;
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-base) 0;
     }
 }
 
@@ -179,6 +207,8 @@
 .alert-validacao {
     animation: slideIn 0.3s ease-out;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: var(--spacing-base);
+    font-size: var(--font-size-sm);
 }
 
 @keyframes slideIn {

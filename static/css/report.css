@@ -6,6 +6,21 @@
     --text-color: #212529;
     --color-success: #28a745;
     --color-ongoing: #ffc107;
+    
+    /* Tamanhos de fonte padronizados */
+    --font-size-xs: 0.75rem;    /* 12px */
+    --font-size-sm: 0.875rem;   /* 14px */
+    --font-size-base: 1rem;     /* 16px */
+    --font-size-lg: 1.25rem;    /* 20px */
+    --font-size-xl: 1.5rem;     /* 24px */
+    --font-size-2xl: 2rem;      /* 32px */
+    
+    /* Espaçamentos padronizados */
+    --spacing-xs: 0.25rem;      /* 4px */
+    --spacing-sm: 0.5rem;       /* 8px */
+    --spacing-base: 1rem;       /* 16px */
+    --spacing-lg: 1.5rem;       /* 24px */
+    --spacing-xl: 2rem;         /* 32px */
 }
 
 /* Navbar customizada */
@@ -33,7 +48,7 @@
 .card {
     background-color: var(--card-background);
     transition: all 0.3s ease;
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-base);
     border: none;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -47,12 +62,14 @@
     background-color: var(--card-background);
     border-top-left-radius: 10px !important;
     border-top-right-radius: 10px !important;
-    padding: 1rem;
+    padding: var(--spacing-base);
     border-bottom: 1px solid rgba(0,0,0,.125);
 }
 
 .card-title {
     color: var(--color-primary);
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-base);
 }
 
 /* Tabelas */
@@ -63,12 +80,14 @@
 
 .table th {
     font-weight: 600;
-    padding: 0.75rem;
+    padding: var(--spacing-base);
+    font-size: var(--font-size-base);
     border-top: none;
 }
 
 .table td {
-    padding: 0.75rem;
+    padding: var(--spacing-base);
+    font-size: var(--font-size-base);
 }
 
 .table-sm th,
@@ -121,8 +140,8 @@ body {
 }
 
 .container {
-    padding-top: 1rem;
-    padding-bottom: 2rem;
+    padding-top: var(--spacing-base);
+    padding-bottom: var(--spacing-xl);
 }
 
 /* Responsividade */
@@ -132,12 +151,30 @@ body {
     }
     
     .container {
-        padding-top: 0.5rem;
+        padding-top: var(--spacing-sm);
     }
     
     .table-responsive {
         margin: 0 -1rem;
         padding: 0 1rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+    
+    .report-title {
+        font-size: var(--font-size-lg);
+    }
+    
+    .student-info {
+        padding: var(--spacing-base);
+    }
+    
+    .student-info h2 {
+        font-size: var(--font-size-base);
     }
 }
 
@@ -155,8 +192,8 @@ body {
 
 .report-title {
     color: var(--color-primary);
-    font-size: 1.75rem;
-    margin-bottom: 1rem;
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-base);
 }
 
 .report-actions {
@@ -166,18 +203,19 @@ body {
 
 .student-info {
     background-color: var(--background-color);
-    padding: 1.5rem;
+    padding: var(--spacing-lg);
     border-radius: 10px;
 }
 
 .student-info h2 {
     color: var(--color-primary);
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-base);
 }
 
 .student-info p {
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-base);
 }
 
 /* Estilos para impressão */
