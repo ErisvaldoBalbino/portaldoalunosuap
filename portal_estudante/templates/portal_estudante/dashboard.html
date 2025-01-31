@@ -32,25 +32,6 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Períodos</h5>
-                    <div class="list-group">
-                        {% if periods %}
-                            {% for period in periods %}
-                                <a href="?ano={{ period.ano_letivo }}&periodo={{ period.periodo_letivo }}"
-                                   class="list-group-item list-group-item-action {% if request.GET.ano == period.ano_letivo and request.GET.periodo == period.periodo_letivo %}active{% endif %}"
-                                   onclick="showTableLoading()">
-                                    {{ period.ano_letivo }}.{{ period.periodo_letivo }}
-                                </a>
-                            {% endfor %}
-                        {% else %}
-                            <div class="text-muted">Nenhum período encontrado</div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
             <!-- Loading overlay -->
             <div id="loadingOverlay" class="loading-overlay" style="display: none;">
                 <div class="spinner-border" style="color: var(--color-primary)" role="status">
@@ -58,26 +39,27 @@
                 </div>
             </div>
 
-            <!-- Período atual -->
+            <!-- Período atual com dropdown -->
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title mb-4">Período Atual</h5>
-                    <div class="periodo-atual">
-                        {% if request.GET.ano and request.GET.periodo %}
-                            {{ request.GET.ano }}.{{ request.GET.periodo }}
-                        {% else %}
-                            {% with latest_period=periods|first %}
-                                {% if latest_period.ano_letivo %}
-                                    {{ latest_period.ano_letivo }}.{{ latest_period.periodo_letivo }}
-                                {% else %}
-                                    {{ latest_period.ano }}.{{ latest_period.periodo }}
-                                {% endif %}
-                            {% endwith %}
-                        {% endif %}
+                    <div class="periodo-select-container">
+                        <select class="periodo-select" onchange="changePeriod(this.value)" id="periodoSelect">
+                            {% if periods %}
+                                {% for period in periods %}
+                                    <option value="{{ period.ano_letivo }}.{{ period.periodo_letivo }}"
+                                            {% if request.GET.ano == period.ano_letivo and request.GET.periodo == period.periodo_letivo %}selected{% endif %}>
+                                        {{ period.ano_letivo }}.{{ period.periodo_letivo }}
+                                    </option>
+                                {% endfor %}
+                            {% else %}
+                                <option value="">Nenhum período disponível</option>
+                            {% endif %}
+                        </select>
+                        <p class="text-muted small mt-3 mb-0 text-center">
+                            Você pode selecionar o período acima
+                        </p>
                     </div>
-                    <p class="text-muted small mt-3 mb-0 text-center">
-                        Clique em um período na lista acima para ver as notas
-                    </p>
                 </div>
             </div>
 
