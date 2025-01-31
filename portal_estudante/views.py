@@ -89,9 +89,13 @@ class DashboardView(TemplateView):
             if not selected_year or not selected_period:
                 if periods:
                     latest_period = periods[0]
-                    selected_year = latest_period.get('ano_letivo') or latest_period.get('ano')
-                    selected_period = latest_period.get('periodo_letivo') or latest_period.get('periodo')
+                    selected_year = str(latest_period.get('ano_letivo'))
+                    selected_period = str(latest_period.get('periodo_letivo'))
                     return redirect(f"{reverse('portal_estudante:dashboard')}?ano={selected_year}&periodo={selected_period}")
+            
+            for period in periods:
+                period['ano_letivo'] = str(period['ano_letivo'])
+                period['periodo_letivo'] = str(period['periodo_letivo'])
             
             grades = suap_api.get_user_grades(selected_year, selected_period) if selected_year and selected_period else []
             semester = f"{selected_year}/{selected_period}"
@@ -116,7 +120,9 @@ class DashboardView(TemplateView):
                 grades=grades,
                 disciplines=disciplines,
                 totals=totals,
-                summary=summary
+                summary=summary,
+                selected_year=selected_year,
+                selected_period=selected_period
             )
             
             return self.render_to_response(context)
