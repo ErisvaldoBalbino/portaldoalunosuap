@@ -11,12 +11,9 @@
 {% block content %}
 <div class="row">
     <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
         <h2 class="mb-4">Relatório Acadêmico - {{ selected_year }}.{{ selected_period }}</h2>
         <div class="d-flex gap-2 mb-4">
-            <a href="{% url 'portal_estudante:dashboard' %}?ano={{ selected_year }}&periodo={{ selected_period }}" 
-               class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
-            </a>
             <a href="{% url 'portal_estudante:export_pdf' %}?ano={{ selected_year }}&periodo={{ selected_period }}" 
                class="btn btn-primary"
                target="_blank">
@@ -24,8 +21,9 @@
             </a>
             <a href="{% url 'portal_estudante:export_csv' %}?ano={{ selected_year }}&periodo={{ selected_period }}" 
                class="btn btn-success">
-                <i class="fas fa-file-csv"></i> Exportar CSV
-            </a>
+                    <i class="fas fa-file-csv"></i> Exportar CSV
+                </a>
+            </div>
         </div>
 
         {% for subject in report_data %}
