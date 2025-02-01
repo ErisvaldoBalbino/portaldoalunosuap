@@ -1,0 +1,103 @@
+/* Banner Informativo */
+.info-banner {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 0.75rem 0;
+    font-size: 0.95rem;
+}
+
+.info-banner .banner-link {
+    color: white;
+    text-decoration: underline;
+    margin-left: 0.25rem;
+}
+
+.info-banner .banner-link:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.info-banner .btn-close-white {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.info-banner .btn-close-white:hover {
+    opacity: 1;
+}
+
+/* Estilos específicos da página de login */
+
+/* Esconde a sidebar e o botão toggle na página de login */
+.login-page .sidebar,
+.login-page .sidebar-toggle {
+    display: none;
+}
+
+/* Remove a margem do conteúdo principal na página de login */
+.login-page .main-content {
+    margin-left: 0;
+    background-color: var(--color-primary);
+    padding: 0;
+}
+
+/* Container de login */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Card de login */
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem;
+}
+
+.login-card .card-body {
+    padding: var(--spacing-xl);
+}
+
+/* Título e subtítulo */
+.login-title {
+    color: var(--color-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: bold;
+    margin-bottom: var(--spacing-sm);
+}
+
+.login-subtitle {
+    color: var(--text-color);
+    opacity: 0.7;
+    margin-bottom: var(--spacing-xl);
+}
+
+/* Botão de login */
+.login-button {
+    padding: var(--spacing-base) var(--spacing-lg);
+    font-size: var(--font-size-base);
+}
+
+.login-button .loading-state {
+    display: none;
+}
+
+/* Footer do card */
+.login-footer {
+    margin-top: var(--spacing-xl);
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+.login-footer .github-link {
+    display: inline-block;
+    margin-top: var(--spacing-lg);
+    color: inherit;
+    text-decoration: none;
+}
+
+.login-footer .github-link:hover {
+    color: var(--color-primary);
+}

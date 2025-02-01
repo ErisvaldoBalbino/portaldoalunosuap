@@ -1,21 +1,4 @@
-/* Estilos específicos do simulador */
-:root {
-    /* Tamanhos de fonte padronizados */
-    --font-size-xs: 0.75rem;    /* 12px */
-    --font-size-sm: 0.875rem;   /* 14px */
-    --font-size-base: 1rem;     /* 16px */
-    --font-size-lg: 1.25rem;    /* 20px */
-    --font-size-xl: 1.5rem;     /* 24px */
-    --font-size-2xl: 2rem;      /* 32px */
-    
-    /* Espaçamentos padronizados */
-    --spacing-xs: 0.25rem;      /* 4px */
-    --spacing-sm: 0.5rem;       /* 8px */
-    --spacing-base: 1rem;       /* 16px */
-    --spacing-lg: 1.5rem;       /* 24px */
-    --spacing-xl: 2rem;         /* 32px */
-}
-
+/* Resultados */
 .result-item {
     display: flex;
     justify-content: space-between;
@@ -40,7 +23,7 @@
     color: var(--color-primary);
 }
 
-/* Estilização dos inputs */
+/* Formulário do simulador */
 .form-control {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -54,7 +37,7 @@
     box-shadow: 0 0 0 0.2rem rgba(30, 50, 49, 0.15);
 }
 
-/* Estilização dos radio buttons */
+/* Radio buttons customizados */
 .btn-check:checked + .btn-outline-primary {
     background-color: var(--color-primary);
     border-color: var(--color-primary);
@@ -74,12 +57,7 @@
     color: white;
 }
 
-/* Animações */
-.technical-only {
-    transition: all 0.3s ease;
-}
-
-/* Status de aprovação */
+/* Status específicos do simulador */
 .status-aprovado {
     color: var(--color-success);
     font-size: var(--font-size-base);
@@ -108,33 +86,6 @@
     margin-bottom: 0;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-    .btn-group {
-        flex-direction: column;
-    }
-    
-    .btn-group .btn {
-        border-radius: 8px !important;
-        margin-bottom: var(--spacing-sm);
-    }
-    
-    .btn-group .btn:last-child {
-        margin-bottom: 0;
-    }
-    
-    .result-item {
-        flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
-    }
-    
-    .result-value {
-        margin-top: var(--spacing-xs);
-        font-size: var(--font-size-base);
-    }
-}
-
 /* Footer Explicativo Expansível */
 .card-header .btn-link {
     color: var(--text-color);
@@ -158,11 +109,7 @@
     transform: rotate(-90deg);
 }
 
-/* Animação do collapse */
-.collapse {
-    transition: all 0.3s ease;
-}
-
+/* Seções de informação */
 .info-section {
     margin-bottom: var(--spacing-lg);
 }
@@ -178,6 +125,7 @@
     font-size: var(--font-size-base);
 }
 
+/* Lista de equações */
 .equation-list {
     list-style: none;
     padding-left: 0;
@@ -193,14 +141,6 @@
 
 .equation-list li:last-child {
     border-bottom: none;
-}
-
-/* Responsividade para o footer */
-@media (max-width: 768px) {
-    .equation-list li {
-        font-size: var(--font-size-xs);
-        padding: var(--spacing-base) 0;
-    }
 }
 
 /* Alerta de Validação */
@@ -232,4 +172,23 @@
 .input-invalid {
     animation: shake 0.3s ease-in-out;
     border-color: var(--color-danger) !important;
+}
+
+/* Responsividade específica do simulador */
+@media (max-width: 768px) {
+    .result-item {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+    
+    .result-value {
+        margin-top: var(--spacing-xs);
+        font-size: var(--font-size-base);
+    }
+    
+    .equation-list li {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-base) 0;
+    }
 } 
