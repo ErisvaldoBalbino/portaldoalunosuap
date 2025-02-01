@@ -59,7 +59,7 @@
                             </tr>
                             {% endif %}
                             {% if subject.situacao != 'Aprovado' %}
-                            <tr>
+                            <tr data-nota1="{{ subject.nota1 }}" data-nota2="{{ subject.nota2 }}">
                                 <th>Precisa de:</th>
                                 <td class="situacao-calculo"></td>
                             </tr>
