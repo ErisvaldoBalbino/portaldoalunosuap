@@ -3,7 +3,7 @@
 {% load custom_filters %}
 
 {% block extra_css %}
-<!-- CSS específico do dashboard, se necessário -->
+<link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -158,7 +158,7 @@
                                 {% endfor %}
                                 <!-- Totals Row -->
                                 <tr class="table-light fw-bold">
-                                    <td class="border-0 text-end">Total:</td>
+                                    <td class="border-0 text-start">Total:</td>
                                     <td class="border-0 text-center">{{ totals.total_classes }}</td>
                                     <td class="border-0 text-center">{{ totals.total_classes_given }}</td>
                                     <td class="border-0 text-center">{{ totals.total_absences }}</td>

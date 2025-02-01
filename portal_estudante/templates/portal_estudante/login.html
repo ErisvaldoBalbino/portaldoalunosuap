@@ -1,84 +1,74 @@
+{% extends 'portal_estudante/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Portal do Aluno SUAP</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <link rel="icon" href="{% static 'img/suap-icon.png' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script>
-        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-</head>
-<body>
-    <!-- Banner Informativo -->
-    <div class="info-banner">
-        <div class="container">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <span>Estou trabalhando para incluir suporte aos alunos dos cursos técnicos, atualmente o sistema considera apenas os cursos superiores para boletim e relatórios. Se você é aluno de algum curso técnico e gostaria de ajudar a melhorar o sistema, por favor, entre em contato através do email: <a href="mailto:balbino.junior@escolar.ifrn.edu.br" class="alert-link">balbino.junior@escolar.ifrn.edu.br</a></span>                
-                </div>
-            </div>
-        </div>
-    </div>
 
+{% block title %}Login - Portal do Aluno SUAP{% endblock %}
+
+{% block body_class %}login-page{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/login.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<!-- Banner Informativo -->
+<div class="info-banner">
     <div class="container">
-        <div class="row min-vh-100 align-items-center justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <div class="card shadow">
-                    <div class="card-body p-5">
-                        <div class="text-center mb-4">
-                            <h2 class="mb-3">Portal do Aluno</h2>
-                            <p class="text-muted">Acesse com sua conta do SUAP</p>
-                        </div>
-                        
-                        <div class="d-grid gap-2">
-                            <a href="{% url 'portal_estudante:login' %}?auth=suap" class="btn btn-primary btn-lg" onclick="showLoading(this)">
-                                <span class="normal-state">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-right me-2" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z"/>
-                                        <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                                    </svg>
-                                    Entrar com SUAP
-                                </span>
-                                <span class="loading-state" style="display: none;">
-                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                    Conectando...
-                                </span>
-                            </a>
-                        </div>
-
-                        <div class="mt-4 text-center">
-                            <p class="text-muted small mb-4">
-                                Ao clicar, você será redirecionado para a página de autenticação do SUAP
-                            </p>
-                            <a href="https://github.com/ErisvaldoBalbino/portal-do-aluno-suap" 
-                                target="_blank" 
-                                class="text-muted text-decoration-none">
-                                <i class="fab fa-github"></i> Ver no GitHub
-                            </a>   
-                        </div>
-                    </div>
-                </div>
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle me-2"></i>
+                <span>Estou trabalhando para incluir suporte aos alunos dos cursos técnicos, atualmente o sistema considera apenas os cursos superiores para boletim e relatórios. Se você é aluno de algum curso técnico e gostaria de ajudar a melhorar o sistema, por favor, entre em contato através do email: <a href="mailto:balbino.junior@escolar.ifrn.edu.br" class="alert-link">balbino.junior@escolar.ifrn.edu.br</a></span>                
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function showLoading(button) {
-            const normalState = button.querySelector('.normal-state');
-            const loadingState = button.querySelector('.loading-state');
+<div class="login-container">
+    <div class="login-card card shadow">
+        <div class="card-body">
+            <div class="text-center">
+                <h2 class="login-title">Portal do Aluno</h2>
+                <p class="login-subtitle">Acesse com sua conta do SUAP</p>
+            </div>
             
-            normalState.style.display = 'none';
-            loadingState.style.display = 'inline-block';
-            button.disabled = true;
-        }
-    </script>
-</body>
-</html> 
+            <div class="d-grid gap-2">
+                <a href="{% url 'portal_estudante:login' %}?auth=suap" 
+                   class="btn btn-primary btn-lg login-button" 
+                   onclick="showLoading(this)">
+                    <span class="normal-state">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Entrar com SUAP
+                    </span>
+                    <span class="loading-state">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Conectando...
+                    </span>
+                </a>
+            </div>
+
+            <div class="login-footer text-center">
+                <p class="mb-4">
+                    Ao clicar, você será redirecionado para a página de autenticação do SUAP
+                </p>
+                <a href="https://github.com/ErisvaldoBalbino/portal-do-aluno-suap" 
+                   target="_blank" 
+                   class="github-link">
+                    <i class="fab fa-github"></i> Ver no GitHub
+                </a>   
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showLoading(button) {
+        const normalState = button.querySelector('.normal-state');
+        const loadingState = button.querySelector('.loading-state');
+        
+        normalState.style.display = 'none';
+        loadingState.style.display = 'inline-block';
+        button.disabled = true;
+    }
+</script>
+{% endblock %} 
