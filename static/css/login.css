@@ -1,13 +1,13 @@
 /* Banner Informativo */
 .info-banner {
-    background-color: var(--color-primary);
+    background-color: var(--background-color);
     color: white;
     padding: 0.75rem 0;
     font-size: 0.95rem;
 }
 
 .info-banner .banner-link {
-    color: white;
+    color: var(--text-color);
     text-decoration: underline;
     margin-left: 0.25rem;
 }
@@ -36,7 +36,7 @@
 /* Remove a margem do conteúdo principal na página de login */
 .login-page .main-content {
     margin-left: 0;
-    background-color: var(--color-primary);
+    background-color: var(--background-color);
     padding: 0;
 }
 
@@ -61,7 +61,7 @@
 
 /* Título e subtítulo */
 .login-title {
-    color: var(--color-primary);
+    color: var(--text-color);
     font-size: var(--font-size-2xl);
     font-weight: bold;
     margin-bottom: var(--spacing-sm);
@@ -100,4 +100,54 @@
 
 .login-footer .github-link:hover {
     color: var(--color-primary);
+}
+
+[data-theme="dark"] {
+    .login-page .main-content {
+        background-color: var(--background-color);
+    }
+
+    .info-banner {
+        background-color: var(--background-color);
+    }
+
+    .info-banner a {
+        color: white;
+    }
+
+    .login-card {
+        background-color: var(--card-background);
+    }
+
+    .login-title,
+    .login-subtitle {
+        color: var(--text-color);
+    }
+
+    .login-footer {
+        color: var(--text-muted);
+    }
+
+    .github-link {
+        color: var(--text-muted);
+    }
+
+    .github-link:hover {
+        color: var(--text-color);
+    }
+}
+
+[data-theme="light"] {
+    .login-page .main-content {
+        background-color: var(--color-primary);
+    }
+
+    .info-banner {
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+    .info-banner a {
+        color: white;
+    }
 }

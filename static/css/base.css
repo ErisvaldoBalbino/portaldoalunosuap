@@ -1,12 +1,22 @@
 /* ==========================================================================
-   Variáveis Globais
+   Variáveis Globais e Temas
    ========================================================================== */
 :root {
-    /* Cores */
+    /* Transição global para troca de temas */
+    --theme-transition: all 0.3s ease;
+
+    /* Tema Claro (Padrão) */
     --color-primary: #1E3231;
     --background-color: #D4DED6;
     --card-background: #FFFFFF;
     --text-color: #212529;
+    --text-muted: #6c757d;
+    --border-color: rgba(0, 0, 0, 0.125);
+    --hover-background: rgba(30, 50, 49, 0.05);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --overlay-background: rgba(255, 255, 255, 0.8);
+    
+    /* Cores de Status */
     --color-success: #28a745;
     --color-danger: #dc3545;
     --color-ongoing: #ffc107;
@@ -32,13 +42,57 @@
     --spacing-xl: 2rem;         /* 32px */
 }
 
+/* Tema Escuro */
+[data-theme="dark"] {
+    --color-primary: #2A4745;
+    --background-color: #1A1D1E;
+    --card-background: #242728;
+    --text-color: #E1E3E5;
+    --text-muted: #9CA3AF;
+    --border-color: rgba(255, 255, 255, 0.125);
+    --hover-background: rgba(255, 255, 255, 0.05);
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --overlay-background: rgba(0, 0, 0, 0.8);
+}
+
+/* Detecta preferência do sistema */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --color-primary: #2A4745;
+        --background-color: #1A1D1E;
+        --card-background: #242728;
+        --text-color: #E1E3E5;
+        --text-muted: #9CA3AF;
+        --border-color: rgba(255, 255, 255, 0.125);
+        --hover-background: rgba(255, 255, 255, 0.05);
+        --shadow-color: rgba(0, 0, 0, 0.3);
+        --overlay-background: rgba(0, 0, 0, 0.8);
+    }
+}
+
 /* ==========================================================================
    Reset e Estilos Base
    ========================================================================== */
 body {
-    background-color: var(--color-primary);
+    background-color: var(--background-color);
     color: var(--text-color);
     min-height: 100vh;
+    transition: var(--theme-transition);
+}
+
+/* Ajuste de cores para links */
+a {
+    color: var(--color-primary);
+    transition: var(--theme-transition);
+}
+
+a:hover {
+    color: var(--text-color);
+}
+
+/* Ajuste de cores para textos mutados */
+.text-muted {
+    color: var(--text-muted) !important;
 }
 
 /* ==========================================================================
@@ -100,10 +154,6 @@ body {
 }
 
 /* Componentes da Sidebar */
-.sidebar-header {
-    margin-bottom: 1rem;
-}
-
 .sidebar-content {
     flex-grow: 1;
 }
@@ -132,18 +182,20 @@ body {
 
 .sidebar-title {
     color: white;
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: bold;
     margin-bottom: var(--spacing-xl);
-    text-align: left;
-    padding-left: var(--spacing-sm);
+    padding: 0 1.5rem;
 }
 
 .sidebar-user {
     color: white;
     margin-bottom: 1rem;
-    text-align: left;
-    padding-left: 0.5rem;
+    padding: 0 1.5rem;
+}
+
+.sidebar-user p {
+    margin: 0;
 }
 
 /* Links da Sidebar */
@@ -166,7 +218,7 @@ body {
 .sidebar-link:hover, .sidebar-link.active {
     color: white;
     background-color: rgba(255, 255, 255, 0.1);
-    border-left-color: var(--color-success);
+    border-radius: 8px;
 }
 
 .sidebar-link.active {
@@ -384,4 +436,240 @@ body {
     .sidebar-toggle.active i {
         transform: rotate(0deg);
     }
+}
+
+/* Theme Toggle */
+#themeToggle.sidebar-link {
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+#themeToggle.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-icon-light,
+.theme-icon-dark {
+    display: none;
+    width: 20px;
+    transition: var(--theme-transition);
+}
+
+[data-theme="dark"] .theme-icon-dark,
+[data-theme="light"] .theme-icon-light {
+    display: inline-block;
+}
+
+/* Ajustes para o tema escuro */
+[data-theme="dark"] {
+    /* Ajustes da Sidebar */
+    .sidebar {
+        background-color: var(--card-background);
+    }
+
+    .sidebar-link:hover,
+    .sidebar-link.active {
+        background-color: var(--hover-background);
+    }
+
+    /* Ajustes dos Cards */
+    .card {
+        background-color: var(--card-background);
+        border-color: var(--border-color);
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+
+    .card-title {
+        color: var(--text-color);
+    }
+
+    .card-body {
+        color: var(--text-color);
+    }
+
+    .card:hover {
+        box-shadow: 0 4px 8px var(--shadow-color);
+    }
+
+    /* Ajustes das Tabelas */
+    .table,
+    .table.table-light,
+    .table.table-striped,
+    .table-responsive .table {
+        color: var(--text-color) !important;
+        background-color: var(--card-background) !important;
+    }
+
+    .table thead th,
+    .table.table-light thead th,
+    .table.table-striped thead th,
+    .table-responsive .table thead th {
+        background-color: var(--background-color) !important;
+        color: var(--text-color) !important;
+        border-color: var(--border-color) !important;
+    }
+
+    .table tbody,
+    .table.table-light tbody,
+    .table.table-striped tbody,
+    .table-responsive .table tbody {
+        background-color: var(--card-background) !important;
+    }
+
+    .table tbody tr,
+    .table.table-light tbody tr,
+    .table.table-striped tbody tr,
+    .table-responsive .table tbody tr {
+        background-color: var(--card-background) !important;
+        color: var(--text-color) !important;
+    }
+
+    .table tbody tr:hover,
+    .table.table-light tbody tr:hover,
+    .table.table-striped tbody tr:hover,
+    .table-responsive .table tbody tr:hover {
+        background-color: var(--hover-background) !important;
+    }
+
+    .table td,
+    .table th,
+    .table.table-light td,
+    .table.table-light th,
+    .table.table-striped td,
+    .table.table-striped th,
+    .table-responsive .table td,
+    .table-responsive .table th {
+        border-color: var(--border-color) !important;
+        color: var(--text-color) !important;
+        background-color: var(--card-background) !important;
+    }
+
+    /* Sobrescreve qualquer estilo do Bootstrap */
+    .table-striped > tbody > tr:nth-of-type(odd),
+    .table-striped > tbody > tr:nth-of-type(even) {
+        background-color: var(--card-background) !important;
+    }
+
+    .table-striped > tbody > tr:nth-of-type(odd):hover,
+    .table-striped > tbody > tr:nth-of-type(even):hover {
+        background-color: var(--hover-background) !important;
+    }
+
+    /* Força o background em todas as células */
+    .table * {
+        background-color: inherit !important;
+    }
+
+    /* Ajustes dos Botões */
+    .btn-primary,
+    .btn-info {
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover,
+    .btn-info:hover {
+        filter: brightness(120%);
+    }
+
+    /* Ajustes do Loading Overlay */
+    .loading-overlay {
+        background-color: var(--overlay-background);
+    }
+
+    /* Ajustes de texto e links */
+    .text-muted,
+    .text-secondary,
+    .text-black-50 {
+        color: var(--text-muted) !important;
+    }
+
+    /* Garantir que textos importantes sejam visíveis */
+    .text-dark,
+    .text-black,
+    .text-body {
+        color: var(--text-color) !important;
+    }
+
+    /* Ajustes específicos para o relatório */
+    .report-info,
+    .report-status,
+    .report-details {
+        color: var(--text-color) !important;
+    }
+
+    .report-info small,
+    .report-status small,
+    .report-details small {
+        color: var(--text-muted) !important;
+    }
+
+    a {
+        color: var(--text-color);
+    }
+
+    a:hover {
+        color: var(--text-muted);
+    }
+
+    /* Ajustes do período select */
+    .periodo-select {
+        background-color: var(--card-background);
+        color: var(--text-color);
+        border-color: var(--border-color);
+    }
+
+    .periodo-select:hover {
+        background-color: var(--hover-background);
+    }
+
+    /* Ajustes do sidebar toggle */
+    .sidebar-toggle {
+        color: var(--text-color);
+    }
+}
+
+/* Tabelas */
+.table {
+    color: var(--text-color);
+    margin-bottom: 0;
+    background-color: var(--card-background);
+}
+
+.table thead th {
+    background-color: var(--background-color);
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    white-space: nowrap;
+}
+
+.table tbody tr {
+    transition: all 0.2s;
+    background-color: var(--card-background);
+}
+
+.table tbody tr:hover {
+    background-color: var(--hover-background);
+}
+
+.table td:first-child {
+    white-space: nowrap;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table td:first-child:hover {
+    overflow: visible;
+    white-space: normal;
+    max-width: none;
+    position: relative;
+    background-color: var(--card-background);
+    z-index: 1;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    border-radius: 4px;
 } 

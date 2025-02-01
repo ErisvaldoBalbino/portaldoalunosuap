@@ -20,7 +20,7 @@
 .result-value {
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: var(--color-primary);
+    color: var(--text-color);
 }
 
 /* Formulário do simulador */
@@ -91,10 +91,6 @@
     color: var(--text-color);
     padding: var(--spacing-sm) 0;
     font-size: var(--font-size-base);
-}
-
-.card-header .btn-link:hover {
-    color: var(--color-primary);
 }
 
 .card-header .btn-link:focus {
@@ -192,3 +188,9 @@
         padding: var(--spacing-base) 0;
     }
 } 
+
+[data-theme="dark"] {
+    .info-section h6 {
+        color: var(--text-color);
+    }
+}
