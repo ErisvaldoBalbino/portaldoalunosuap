@@ -60,17 +60,17 @@
 /* Status específicos do simulador */
 .status-aprovado {
     color: var(--color-success);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
 }
 
 .status-reprovado {
     color: var(--color-danger);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
 }
 
 .status-final {
     color: var(--color-ongoing);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
 }
 
 /* Possibilidades de aprovação */

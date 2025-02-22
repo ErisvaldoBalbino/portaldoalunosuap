@@ -458,12 +458,46 @@ class SimulatorView(TemplateView):
                 return redirect(f"{reverse('portal_estudante:simulator')}?ano={selected_year}&periodo={selected_period}")
         
         grades = suap_api.get_user_grades(selected_year, selected_period)
+
+        totals = self.calculate_totals(grades) if grades else {
+            'total_classes': 0,
+            'total_absences': 0,
+            'total_frequency': 0,
+            'total_classes_given': 0
+        }
         
         context = self.get_context_data(
             user_data=request.session.get('user_data', {}),
             grades=grades,
+            totals=totals,
             selected_year=selected_year,
             selected_period=selected_period
         )
         
         return self.render_to_response(context)
+
+    @staticmethod
+    def calculate_totals(grades):
+        totals = {
+            'total_classes': 0,
+            'total_classes_given': 0,
+            'total_absences': 0,
+            'total_frequency': 0
+        }
+        
+        for subject in grades:
+            ch = int(subject.get('carga_horaria', 0))
+            ch_cumprida = int(subject.get('carga_horaria_cumprida', 0))
+            faltas = int(subject.get('numero_faltas', 0))
+            
+            totals['total_classes'] += ch
+            totals['total_classes_given'] += ch_cumprida
+            totals['total_absences'] += faltas
+        
+        if totals['total_classes_given'] > 0:
+            totals['total_frequency'] = round(
+                ((totals['total_classes_given'] - totals['total_absences']) / totals['total_classes_given']) * 100,
+                2
+            )
+        
+        return totals

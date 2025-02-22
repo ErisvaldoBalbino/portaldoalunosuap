@@ -13,7 +13,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Atualiza limite de faltas quando a carga horária muda
-    document.getElementById('cargaHoraria').addEventListener('input', atualizarLimiteFaltas);
+    const cargaHorariaInput = document.getElementById('cargaHoraria');
+    cargaHorariaInput.addEventListener('input', atualizarLimiteFaltas);
+    
+    // Verifica se já existe valor na carga horária ao carregar a página
+    if (cargaHorariaInput.value) {
+        atualizarLimiteFaltas();
+    }
 
     // Adiciona validação para os inputs de notas
     ['nota1', 'nota2', 'nota3', 'nota4'].forEach(id => {
@@ -201,12 +207,20 @@ function calcularNotaFinalSuperior(media) {
 function calcularSimulacao() {
     // Pega os valores dos inputs
     const isTechnical = document.getElementById('technical').checked;
-    const nota1 = parseFloat(document.getElementById('nota1').value) || 0;
-    const nota2 = parseFloat(document.getElementById('nota2').value) || 0;
-    const nota3 = parseFloat(document.getElementById('nota3').value) || 0;
-    const nota4 = parseFloat(document.getElementById('nota4').value) || 0;
-    const cargaHoraria = parseFloat(document.getElementById('cargaHoraria').value) || 0;
-    const faltas = parseFloat(document.getElementById('faltas').value) || 0;
+    const nota1Input = document.getElementById('nota1');
+    const nota2Input = document.getElementById('nota2');
+    const nota3Input = document.getElementById('nota3');
+    const nota4Input = document.getElementById('nota4');
+    const cargaHorariaInput = document.getElementById('cargaHoraria');
+    const faltasInput = document.getElementById('faltas');
+
+    // Converte os valores para número, usando 0 como padrão se estiver vazio
+    const nota1 = parseFloat(nota1Input.value) || 0;
+    const nota2 = parseFloat(nota2Input.value) || 0;
+    const nota3 = parseFloat(nota3Input.value) || 0;
+    const nota4 = parseFloat(nota4Input.value) || 0;
+    const cargaHoraria = parseFloat(cargaHorariaInput.value) || 0;
+    const faltas = parseFloat(faltasInput.value) || 0;
 
     // Calcula a média
     const media = isTechnical ? 
@@ -221,7 +235,12 @@ function calcularSimulacao() {
     if (media >= MEDIA_APROVACAO) {
         situacao = '<span class="status-aprovado">Aprovado</span>';
     } else if (media < MEDIA_FINAL) {
-        situacao = '<span class="status-reprovado">Reprovado por Nota</span>';
+        // Verifica se alguma nota foi preenchida antes de mostrar "Reprovado"
+        if (!nota1Input.value.trim() && !nota2Input.value.trim()) {
+            situacao = '<span class="text-muted">Insira as notas para ver a situação</span>';
+        } else {
+            situacao = '<span class="status-reprovado">Reprovado por Nota</span>';
+        }
     } else {
         situacao = '<span class="status-final">Prova Final</span>';
     }

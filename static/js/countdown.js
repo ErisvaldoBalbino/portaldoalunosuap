@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Data das férias
-    const endDate = new Date('2025-03-17T00:00:00').getTime();
+    const endDate = new Date('2025-03-11T00:00:00').getTime();
 
     // Atualiza o contador a cada segundo
     const countdown = setInterval(function() {
