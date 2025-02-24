@@ -9,9 +9,123 @@ function changePeriod(value) {
     showTableLoading();
     const [ano, periodo] = value.split('.');
     if (ano && periodo) {
-        window.location.href = `?ano=${ano}&periodo=${periodo}`;
+        // Fazer requisição AJAX em vez de recarregar a página
+        fetch(`${window.location.pathname}?ano=${ano}&periodo=${periodo}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Recalcular o resumo acadêmico com base nos mesmos critérios da tabela
+            if (data.grades && Array.isArray(data.grades)) {
+                const summary = {
+                    total_subjects: data.grades.length,
+                    approved_subjects: 0,
+                    at_risk_subjects: 0
+                };
+
+                data.grades.forEach(subject => {
+                    const nota1 = subject.nota_etapa_1?.nota;
+                    const nota2 = subject.nota_etapa_2?.nota;
+                    const media = parseFloat(subject.media_disciplina || 0);
+
+                    if (subject.situacao === "Aprovado" || 
+                        (nota1 !== undefined && nota2 !== undefined && media >= 60)) {
+                        summary.approved_subjects++;
+                    } else {
+                        summary.at_risk_subjects++;
+                    }
+                });
+
+                // Atualizar o resumo na interface
+                document.querySelector('.col-4:nth-child(1) h3').textContent = summary.total_subjects;
+                document.querySelector('.col-4:nth-child(2) h3').textContent = summary.approved_subjects;
+                document.querySelector('.col-4:nth-child(3) h3').textContent = summary.at_risk_subjects;
+            }
+
+            // Atualizar tabela de notas
+            const tbody = document.querySelector('.table tbody');
+            tbody.innerHTML = '';
+
+            if (data.grades && Array.isArray(data.grades)) {
+                data.grades.forEach(subject => {
+                    const row = document.createElement('tr');
+                    row.className = 'align-middle';
+
+                    // Extrair valores com fallbacks seguros
+                    const nota1 = subject.nota_etapa_1?.nota || '--';
+                    const nota2 = subject.nota_etapa_2?.nota || '--';
+                    const media = subject.media_disciplina || '--';
+                    const final = subject.nota_avaliacao_final?.nota || '--';
+                    const mediaFinal = subject.media_final_disciplina || '--';
+                    const frequencia = (subject.percentual_carga_horaria_frequentada || 0).toFixed(1);
+
+                    row.innerHTML = `
+                        <td class="border-0">${subject.disciplina || ''}</td>
+                        <td class="border-0 text-center">${subject.carga_horaria || '0'}</td>
+                        <td class="border-0 text-center">${subject.carga_horaria_cumprida || '0'}</td>
+                        <td class="border-0 text-center">${subject.numero_faltas || '0'}</td>
+                        <td class="border-0 text-center">${frequencia}%</td>
+                        <td class="border-0 text-center">${nota1}</td>
+                        <td class="border-0 text-center">${nota2}</td>
+                        <td class="border-0 text-center">${media}</td>
+                        <td class="border-0 text-center">${final}</td>
+                        <td class="border-0 text-center">${mediaFinal}</td>
+                        <td class="border-0 text-center">
+                            ${(subject.situacao === "Aprovado" || 
+                               (nota1 !== '--' && nota2 !== '--' && parseFloat(media) >= 60))
+                                ? '<span class="status-approved">Aprovado</span>'
+                                : '<span class="status-ongoing">Cursando</span>'}
+                        </td>
+                        <td class="border-0 text-center">
+                            <button class="btn btn-sm btn-info" onclick="calcularNecessario('${subject.disciplina}', ${nota1 === '--' ? 0 : nota1}, ${nota2 === '--' ? 0 : nota2}, ${subject.carga_horaria || 0}, ${subject.numero_faltas || 0})">
+                                Calcular
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Adicionar linha de totais
+            if (data.totals) {
+                const totalsRow = document.createElement('tr');
+                totalsRow.className = 'table fw-bold';
+                totalsRow.innerHTML = `
+                    <td class="border-0 text-start">Total:</td>
+                    <td class="border-0 text-center">${data.totals.total_classes || 0}</td>
+                    <td class="border-0 text-center">${data.totals.total_classes_given || 0}</td>
+                    <td class="border-0 text-center">${data.totals.total_absences || 0}</td>
+                    <td class="border-0 text-center">${data.totals.total_frequency || 0}%</td>
+                    <td class="border-0 text-center" colspan="7">--</td>
+                `;
+                tbody.appendChild(totalsRow);
+            }
+
+            // Atualizar URL sem recarregar
+            const url = new URL(window.location);
+            url.searchParams.set('ano', ano);
+            url.searchParams.set('periodo', periodo);
+            window.history.pushState({}, '', url);
+
+            document.getElementById('loadingOverlay').style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Erro ao carregar dados:', error);
+            document.getElementById('loadingOverlay').style.display = 'none';
+            alert('Erro ao carregar os dados. Por favor, tente novamente.');
+        });
     }
 }
+
+// Carregar dados iniciais quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    const periodoSelect = document.getElementById('periodoSelect');
+    if (periodoSelect && periodoSelect.value) {
+        changePeriod(periodoSelect.value);
+    }
+});
 
 // Função para calcular notas necessárias
 function calcularNecessario(disciplina, nota1, nota2, cargaHoraria, faltas) {
@@ -35,7 +149,7 @@ function calcularNecessario(disciplina, nota1, nota2, cargaHoraria, faltas) {
 
     if (mediaAtual >= 60) {
         situacao = '<span class="status-approved">Aprovado por média!</span>';
-        necessidade = '<p class="text-success">Você já está aprovado! 🎉</p>';
+        necessidade = '<p class="status-approved">Você já está aprovado! 🎉</p>';
     } else if (!nota2) {
         // Cálculo da nota 2 necessária: (5*60 - 2*N1)/3
         const nota2Necessaria = (5 * 60 - 2 * nota1) / 3;
@@ -73,7 +187,7 @@ function calcularNecessario(disciplina, nota1, nota2, cargaHoraria, faltas) {
     
     if (faltasRestantes > 0) {
         document.getElementById('podeFaltar').innerHTML = 
-            `<span class="text-success">Ainda pode faltar ${faltasRestantes} aulas</span>`;
+            `<span class="status-approved">Ainda pode faltar ${faltasRestantes} aulas</span>`;
     } else if (faltasRestantes === 0) {
         document.getElementById('podeFaltar').innerHTML = 
             `<span class="text-danger">ATENÇÃO: Você atingiu o limite de faltas!</span>`;

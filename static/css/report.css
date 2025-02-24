@@ -4,6 +4,76 @@
     height: 70px;
 }
 
+.periodo-select-container {
+    position: relative;
+    min-width: 200px;
+}
+
+.periodo-select {
+    width: 100%;
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    color: var(--text-color);
+    background-color: var(--card-background);
+    border: 2px solid var(--color-primary);
+    border-radius: 8px;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.periodo-select:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.periodo-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.periodo-select-container::after {
+    content: '▼';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-primary);
+    pointer-events: none;
+    transition: transform 0.3s ease;
+}
+
+.periodo-select-container:hover::after {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.periodo-select option {
+    padding: 0.5rem;
+    background-color: var(--card-background);
+    color: var(--text-color);
+}
+
+.periodo-select option:checked {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
 /* Cards */
 .card {
     background-color: var(--card-background);
@@ -48,6 +118,15 @@
 .table td {
     padding: var(--spacing-base);
     font-size: var(--font-size-base);
+    text-align: right;
+}
+
+.table th:first-child {
+    text-align: left;
+}
+
+.table td:first-child {
+    text-align: left;
 }
 
 .table-sm th,

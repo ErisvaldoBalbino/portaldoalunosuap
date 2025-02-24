@@ -50,8 +50,54 @@ function analisarSituacao(nota1, nota2) {
     return `${notaFinalNecessaria} na final`;
 }
 
-// Inicializar cálculos quando a página carregar
+// Função para mostrar o loading ao trocar de período
+function showTableLoading() {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+}
+
+function changePeriod(value) {
+    if (!value) return;
+    
+    showTableLoading();
+    const [ano, periodo] = value.split('.');
+    if (ano && periodo) {
+        // Atualizar URL
+        const url = new URL(window.location);
+        url.searchParams.set('ano', ano);
+        url.searchParams.set('periodo', periodo);
+        
+        // Fazer requisição AJAX
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro na requisição');
+            }
+            // Recarregar a página com os novos parâmetros
+            window.location.href = url;
+        })
+        .catch(error => {
+            console.error('Erro ao carregar dados:', error);
+            document.getElementById('loadingOverlay').style.display = 'none';
+            alert('Erro ao carregar os dados. Por favor, tente novamente.');
+        });
+    }
+}
+
+// Carregar dados iniciais quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
+    const periodoSelect = document.getElementById('periodoSelect');
+    if (periodoSelect && !periodoSelect.value) {
+        // Se não houver período selecionado, selecionar o primeiro
+        if (periodoSelect.options.length > 0) {
+            changePeriod(periodoSelect.options[0].value);
+        }
+    }
+    
+    // Inicializar cálculos
     const disciplinas = document.querySelectorAll('[data-nota1]');
     disciplinas.forEach(disciplina => {
         const nota1 = parseFloat(disciplina.dataset.nota1) || 0;
